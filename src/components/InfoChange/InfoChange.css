@@ -1,0 +1,6 @@
+.fixed-position {
+    position: absolute;
+    top: 16px;
+    left: 62%;
+    width: 15%;
+}

@@ -1,0 +1,65 @@
+.checkbox-block {
+    width: 95%;
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-left: 0;
+    margin-bottom: 12px;
+
+}
+
+.checkbox-group h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+}
+
+.checkbox-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.checkbox-grid input {
+    width: 10px;
+}
+
+.hidden-count {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 8px;
+}
+
+.expand-button {
+  justify-self: start;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+.arrow-up {
+    transform: rotate(180deg)
+}

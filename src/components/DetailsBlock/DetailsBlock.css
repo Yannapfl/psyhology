@@ -1,0 +1,33 @@
+.client-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+  background-color: #f4f5ef; 
+}
+
+.client-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.client-item {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.label {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1e1e1e;
+}

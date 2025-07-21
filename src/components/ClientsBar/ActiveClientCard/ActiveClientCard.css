@@ -1,0 +1,51 @@
+.client-card {
+    margin-bottom: 24px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 0 0 1px #e0e0e0;
+  max-width: 600px;
+  font-family: sans-serif;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+}
+
+.name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  flex-grow: 1;
+}
+
+.status {
+  background-color: #e6f3ec;
+  color: #006400;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.card-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}

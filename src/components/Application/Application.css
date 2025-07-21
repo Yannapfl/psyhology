@@ -1,0 +1,23 @@
+.application {
+    margin: 0 2em;
+    width: 584px;
+}
+
+.application h1 {
+    margin: 0;
+}
+
+.form-container {
+  max-width: 584px;
+  margin: 1em auto;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.application .button-group {
+    margin: 1em auto;
+}

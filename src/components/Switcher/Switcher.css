@@ -1,0 +1,32 @@
+.switcher-container {
+  position: relative;
+  width: fit-content;
+  margin: 32px 0 24px 0;
+}
+
+.switcher {
+  display: flex;
+  position: relative;
+  gap: 24px;
+}
+
+.tab {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #999;
+  padding-bottom: 4px;
+}
+
+.tab.active {
+  color: #006400;
+}
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: #006400;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}

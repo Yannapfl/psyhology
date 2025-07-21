@@ -1,0 +1,57 @@
+.navigation-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 16px;
+     position: sticky;
+  top: 16px; 
+  z-index: 10;
+}
+
+.navigation {
+    display: block;
+    width: 100%;
+    border-radius: 16px;
+    border: none;
+    background-color: white;
+}
+
+.nav-links {
+    padding: 8px 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
+}
+
+.nav-links h3 {
+    margin: 1em 0;
+}
+
+.active-link-high,
+.active-link-bottom {
+  background-color: #10603C;
+  color: white;
+}
+
+.active-link-high{
+      border-radius: 8px 8px 0 0;
+}
+
+.active-link-bottom {
+      border-radius: 0 0 8px 8px;
+}
+
+
+.nav-full-divider {
+  width: 100% +16px;
+  height: 1px;
+  background-color: #94949446; 
+  margin: 0; 
+}
+
+.white-icon {
+  filter: brightness(0) invert(1); 
+}
+

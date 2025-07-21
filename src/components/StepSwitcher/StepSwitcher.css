@@ -1,0 +1,39 @@
+.step-switcher {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f6f3;
+  padding: 24px 0;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+}
+
+.step span {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #c4c4c4;
+  margin-bottom: 8px;
+}
+
+.step span.active {
+  color: #065f46;
+}
+
+.line {
+  height: 4px;
+  border-radius: 4px;
+}
+
+.line-inactive {
+  background-color: #e6ede8;
+}
+
+.line-active {
+  background-color: #065f46;
+}
