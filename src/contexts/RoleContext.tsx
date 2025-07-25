@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-type Role = 'client' | 'psychologist' | null;
+type Role = 'client' | 'psychologist' | 'admin' | 'manager' | null;
 
 interface RoleContextType {
   role: Role;
@@ -16,7 +16,7 @@ export const RoleProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const savedRole = localStorage.getItem('role') as Role | null;
-    if (savedRole === 'client' || savedRole === 'psychologist') {
+    if (savedRole === 'client' || savedRole === 'psychologist' || savedRole === 'admin' || savedRole === 'manager') {
       setRoleState(savedRole);
     }
   }, []);
@@ -25,6 +25,7 @@ export const RoleProvider = ({ children }: { children: React.ReactNode }) => {
     setRoleState(newRole);
     if (newRole) {
       localStorage.setItem('role', newRole);
+      console.log(role, 'role')
     } else {
       localStorage.removeItem('role');
     }

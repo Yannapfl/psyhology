@@ -24,7 +24,6 @@ export default function LoginModal({ role }: LoginModalProps) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [checkedAuthMemory, setCheckedAuthMemory] = useState(false);
-  const roleId = role === "client" ? 4 : 3;
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -33,20 +32,33 @@ export default function LoginModal({ role }: LoginModalProps) {
     }
   }, [role, router]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    try {
-      await signIn({ email: login, password, role_id: roleId });
-      if (role === "client") {
-        router.push(AppRoutes.homeclient);
-      } else {
+  try {
+    await signIn({ email: login, password });
+
+    const storedUser = localStorage.getItem('user');
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const roleName = parsedUser?.role;
+
+    switch (roleName) {
+      case "admin":
+      case "manager":
+        router.push(AppRoutes.clients); 
+        break;
+      case "psychologist":
         router.push(AppRoutes.homepsyhology);
-      }
-    } catch {
-      console.error("Ошибка при входе");
+        break;
+      case "client":
+      default:
+        router.push(AppRoutes.homeclient);
     }
-  };
+  } catch {
+    console.error("Ошибка при входе");
+  }
+};
+
 
   if (!role) {
     return null;

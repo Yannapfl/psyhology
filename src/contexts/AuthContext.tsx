@@ -33,17 +33,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const result: SignInResponse = await response.json();
+const accessToken = result.access_token;
+const userData = result.user;
 
-      const accessToken = result.access_token;
+setToken(accessToken);
+setUser(userData);
 
-      setToken(accessToken);
-      console.log("Токен:", accessToken);
+localStorage.setItem('token', accessToken);
+localStorage.setItem('user', JSON.stringify(userData));
 
-      const userData: User = { email: data.email, role_id: data.role_id };
-      setUser(userData);
 
-      localStorage.setItem('token', accessToken);
-      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('SignIn Error:', error);
       throw error;

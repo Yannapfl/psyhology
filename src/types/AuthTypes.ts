@@ -1,18 +1,18 @@
 export interface SignInRequest {
   email: string;
   password: string;
-  role_id: number;
 }
 
 export interface SignInResponse {
   access_token: string;
   refresh_token: string;
+  user: User;
 }
 
 
 export interface User {
   email: string;
-  role_id: number;
+  role: string;
 }
 
 export interface AuthContextType {

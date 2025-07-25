@@ -27,7 +27,7 @@ const statuses: Record<string, string> = {
   "Вышел из проекта": "status-red",
 };
 
-export default function Table() {
+export default function ClientsTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
   const totalPages = Math.ceil(data.length / perPage);

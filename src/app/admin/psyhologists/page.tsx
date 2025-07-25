@@ -6,6 +6,7 @@ import { useState } from "react";
 import ModalAddPsy from "@/components/Modals/ModalAddPsy";
 import Select from "@/components/Dropdown/Dropdown";
 import Input from "@/components/Input/Input";
+import PsyTable from "@/components/PsyTable/PsyTable";
 
 export default function ClientsPage() {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -125,6 +126,8 @@ export default function ClientsPage() {
           
           <button className="filter-button">Очистить фильтр</button>
         </div>
+
+        <PsyTable />
 
         {openAddModal && <ModalAddPsy onClose={() => setOpenAddModal(false)} />}
       </div>
