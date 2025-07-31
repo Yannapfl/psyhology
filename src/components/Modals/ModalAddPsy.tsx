@@ -1,45 +1,90 @@
+'use client'
+
 import "./Modals.css";
 import Image from "next/image";
 import close from "../../../public/icons/Close.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../Input/Input";
 import Select from "../Dropdown/Dropdown";
+import api from "@/utils/api";
 
 export default function ModalAddPsy({ onClose }: { onClose: () => void }) {
   const [crm, setCrm] = useState("");
+  const [distributionStatuses, setDistributionStatuses] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    birthDate: "",
     phoneCall: "",
     phoneWhatsApp: "",
     phoneTelegram: "",
     email: "",
-    psyhology: "",
-    status: "",
+    education: "",
+    country: "",
+    internationalAcc: "",
+    tariff: "",
+    startedAt: "",
+    limitClients: "",
+    haveClients: "",
+    educationStatus: "",
+    readyStatus: "",
+    changesCount: "",
+    gender: "",
     comments: "",
-    education: '',
-    country: '',
-    internationalAcc: '',
-    tariff: '',
-    startedAt: '',
-    limitClients: '',
-    haveClients: '',
-    readyStatus: '',
-    changesCount: ''
+    distributionStatus: "",
   });
 
+  const cohortId = 1;
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      try {
+        const res = await api.get("/v1/enums/psychologist-distribution-statuses");
+        setDistributionStatuses(res.data); 
+      } catch (error) {
+        console.error("Ошибка при загрузке статусов распределения:", error);
+      }
+    };
+    fetchStatuses();
+  }, []);
+
   const handleChange = (
-   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    alert('Клиент успешно создан');
-    onClose();
-  }
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        amount_of_replacements: parseInt(formData.changesCount) || 0,
+        country: formData.country,
+        education: formData.education,
+        education_status: formData.educationStatus,
+        email: formData.email,
+        first_name: formData.firstName,
+        gender: formData.gender,
+        international_account: formData.internationalAcc === "Есть",
+        last_name: formData.lastName,
+        name4telegram: formData.phoneTelegram,
+        number_clients_able2serve: parseInt(formData.limitClients) || 0,
+        number_current_clients: parseInt(formData.haveClients) || 0,
+        phone2call: formData.phoneCall,
+        phone2whatsapp: formData.phoneWhatsApp,
+        plan: formData.tariff,
+        readiness_status: formData.readyStatus,
+        remark: formData.comments,
+        start_at: new Date(formData.startedAt).toISOString(),
+        distribution_status: 'left',
+      };
+
+      const res = await api.post(`/v1/${cohortId}/psychologists`, payload);
+      console.log("Психолог успешно создан", res.data);
+      onClose();
+    } catch (error) {
+      console.error("Ошибка при создании психолога:", error);
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -50,173 +95,79 @@ export default function ModalAddPsy({ onClose }: { onClose: () => void }) {
             <Image src={close} alt="close" width={24} />
           </button>
         </div>
+
         <div className="modal-admin">
-<div className="modal-crm">
-          <input
-            type="text"
-            name="crm"
-            value={crm}
-            onChange={(e) => setCrm(e.target.value)}
-            placeholder="Amo CRM ID"
-          />
-          <button className="btn-light-green">Подтянуть данные</button>
-        </div>
-        <div className="two-flexbox">
-          <Input
-            placeholder="Имя"
-            name="firstName"
-            value={formData.firstName}
+          <div className="modal-crm">
+            <input
+              type="text"
+              name="crm"
+              value={crm}
+              onChange={(e) => setCrm(e.target.value)}
+              placeholder="Amo CRM ID"
+            />
+            <button className="btn-light-green">Подтянуть данные</button>
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="firstName" placeholder="Имя" value={formData.firstName} onChange={handleChange} style={{ padding: "16px" }} />
+            <Input name="lastName" placeholder="Фамилия" value={formData.lastName} onChange={handleChange} style={{ padding: "16px" }} />
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="phoneCall" placeholder="Номер телефона для звонка" value={formData.phoneCall} onChange={handleChange} style={{ padding: "16px" }} />
+            <Input name="phoneWhatsApp" placeholder="Номер WhatsApp" value={formData.phoneWhatsApp} onChange={handleChange} style={{ padding: "16px" }} />
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="phoneTelegram" placeholder="Ник Telegram" value={formData.phoneTelegram} onChange={handleChange} style={{ padding: "16px" }} />
+            <Input name="email" placeholder="Email" type="email" value={formData.email} onChange={handleChange} style={{ padding: "16px" }} />
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="education" placeholder="Образование" value={formData.education} onChange={handleChange} style={{ padding: "16px" }} />
+            <Select name="country" value={formData.country} onChange={handleChange} options={["Россия", "Казахстан", "Беларусь"]} placeholderOption="Страна" />
+          </div>
+
+          <div className="two-flexbox">
+            <Select name="gender" value={formData.gender} onChange={handleChange} options={["Мужчина", "Женщина"]} placeholderOption="Пол" />
+            <Select name="internationalAcc" value={formData.internationalAcc} onChange={handleChange} options={["Есть", "Нет"]} placeholderOption="Счет заграницей" />
+          </div>
+
+          <div className="two-flexbox">
+            <Select name="tariff" value={formData.tariff} onChange={handleChange} options={["Базовый", "Premium"]} placeholderOption="Тариф" />
+            <Select name="distributionStatus" value={formData.distributionStatus} onChange={handleChange} options={distributionStatuses} placeholderOption="Статус распределения" />
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="startedAt" placeholder="Дата старта" type="date" value={formData.startedAt} onChange={handleChange} style={{ padding: "16px" }} />
+            <Select name="educationStatus" value={formData.educationStatus} onChange={handleChange} options={["Готов", "Не готов"]} placeholderOption="Статус обучения" />
+          </div>
+
+          <div className="two-flexbox">
+            <Input name="limitClients" placeholder="Нужно клиентов" value={formData.limitClients} onChange={handleChange} style={{ padding: "16px" }} />
+            <Input name="haveClients" placeholder="Распределено клиентов" type="number" value={formData.haveClients} onChange={handleChange} style={{ padding: "16px" }} />
+          </div>
+
+          <div className="two-flexbox">
+            <Select name="readyStatus" value={formData.readyStatus} onChange={handleChange} options={["Готов", "Не готов"]} placeholderOption="Готовность" />
+            <Input name="changesCount" placeholder="Количество замен" type="number" value={formData.changesCount} onChange={handleChange} style={{ padding: "16px" }} />
+          </div>
+
+          <textarea
+            name="comments"
+            value={formData.comments}
             onChange={handleChange}
-            style={{padding: '16px'}}
+            placeholder="Примечания"
+            rows={4}
+            className="textarea-reason"
+            style={{ marginBottom: "16px" }}
           />
-          <Input
-            placeholder="Фамилия"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-        </div>
-        <div className="two-flexbox">
-          <Input
-            placeholder="Номер телефона для звонка"
-            name="phoneCall"
-            value={formData.phoneCall}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-          <Input
-            placeholder="Номер телефона WhatsApp"
-            name="phoneWhatsApp"
-            value={formData.phoneWhatsApp}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-        </div>
-        <div className="two-flexbox">
-          <Input
-            placeholder="Никнейм Telegram"
-            name="phoneTelegram"
-            value={formData.phoneTelegram}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-          <Input
-            placeholder="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-        </div>
-        <div className="two-flexbox">
-          <Input
-            placeholder="Образование"
-            name="education"
-            value={formData.education}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-          <Select
-          style={{padding: '16px'}}
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            options={["Россия", "Казахстан", "Беларусь"]}
-            placeholderOption="Страна"
-          />
-        </div>
-        <div className="two-flexbox">
-          <Select
-          style={{padding: '16px'}}
-            name="internationalAcc"
-            value={formData.internationalAcc}
-            onChange={handleChange}
-            options={["Есть", "Неn"]}
-            placeholderOption="Счет заграницей"
-          />
-          <Select
-          style={{padding: '16px'}}
-            name="tariff"
-            value={formData.tariff}
-            onChange={handleChange}
-            options={["Базовый", "Premium"]}
-            placeholderOption="Тариф"
-          />
-        </div>
-        <div className="two-flexbox">
-          <Input
-            placeholder="Дата старта"
-            name="startedAt"
-            value={formData.startedAt}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-            type='date'
-          />
-          <Select
-          style={{padding: '16px'}}
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            options={["Готов", "Не готов"]}
-            placeholderOption="Статус обучения"
-          />
-        </div>
-         <div className="two-flexbox">
-          <Input
-            placeholder="Нужно клиентов"
-            name="limitclients"
-            value={formData.limitClients}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-          <Input
-            placeholder="Распределено клиентов"
-            name="haveclients"
-            type="number"
-            value={formData.haveClients}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-          />
-        </div>
-        <div className="two-flexbox">
-          <Select
-          style={{padding: '16px'}}
-            name="status"
-            value={formData.readyStatus}
-            onChange={handleChange}
-            options={["Готов", "Не готов"]}
-            placeholderOption="Статус готовности"
-          />
-          <Input
-            placeholder="Количество замен"
-            name="changescount"
-            value={formData.changesCount}
-            onChange={handleChange}
-            style={{padding: '16px'}}
-            type='number'
-          />
-        </div>
-        <textarea 
-        name="complaint"
-          value={formData.comments}
-          onChange={handleChange}
-          placeholder="Примечания"
-          rows={4}
-          className="textarea-reason"
-          style={{ marginBottom: '16px'}}
-          />
-        </div>
-        <div className="button-group">
-          <button className="btn-light-green " onClick={onClose}>
-            ОТМЕНА
-          </button>
-          <button className="btn" onClick={handleSubmit}>
-            СОХРАНИТЬ
-          </button>
         </div>
 
+        <div className="button-group">
+          <button className="btn-light-green" onClick={onClose}>ОТМЕНА</button>
+          <button className="btn" onClick={handleSubmit}>СОХРАНИТЬ</button>
+        </div>
       </div>
     </div>
   );

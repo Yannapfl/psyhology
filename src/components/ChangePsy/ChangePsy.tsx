@@ -19,7 +19,7 @@ export default function ChangePsy() {
 
   if (psyInfo === null) {
     return (
-      <div className="psy-empty">
+      <div className="psy-empty" style={{ margin: '7em 12em', width: '70%'}}>
       <UserIcon width={64} style={{ color: '#949494'}}/>
       <h2>У вас нет психолога на замену</h2>
     </div>

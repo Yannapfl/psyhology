@@ -25,7 +25,6 @@ export const RoleProvider = ({ children }: { children: React.ReactNode }) => {
     setRoleState(newRole);
     if (newRole) {
       localStorage.setItem('role', newRole);
-      console.log(role, 'role')
     } else {
       localStorage.removeItem('role');
     }

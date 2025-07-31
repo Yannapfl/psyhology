@@ -1,6 +1,7 @@
 export interface SignInRequest {
   email: string;
   password: string;
+  role: string,
 }
 
 export interface SignInResponse {
@@ -13,7 +14,11 @@ export interface SignInResponse {
 export interface User {
   email: string;
   role: string;
+  cohort_id: number;
 }
+
+export type Role = 'client' | 'psychologist' | 'admin' | 'manager' ;
+
 
 export interface AuthContextType {
   user: User | null;

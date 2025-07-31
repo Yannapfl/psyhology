@@ -1,53 +1,79 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthContextType, SignInRequest, SignInResponse, User } from '@/types/AuthTypes';
+import { AuthContextType, Role, SignInRequest, User } from '@/types/AuthTypes';
 import { BaseUrl } from '@/constants/BaseUrl';
+import { useRole } from './RoleContext';
+import api from '@/utils/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const { setRole } = useRole();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+
+    if (storedToken) {
+      try {
+        setToken(storedToken);
+      } catch (error) {
+        console.error('Ошибка при парсинге user из localStorage:', error);
+        localStorage.removeItem('user');
+      }
     }
   }, []);
 
   const signIn = async (data: SignInRequest) => {
-    try {
-      const response = await fetch(`${BaseUrl}/v1/auth/sign-in`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+  try {
+    const response = await fetch(`${BaseUrl}/v1/auth/sign-in`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-      if (!response.ok) {
-        throw new Error('Ошибка авторизации');
-      }
-
-      const result: SignInResponse = await response.json();
-const accessToken = result.access_token;
-const userData = result.user;
-
-setToken(accessToken);
-setUser(userData);
-
-localStorage.setItem('token', accessToken);
-localStorage.setItem('user', JSON.stringify(userData));
-
-
-    } catch (error) {
-      console.error('SignIn Error:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error('Ошибка авторизации');
     }
-  };
+
+    const result = await response.json();
+    const accessToken = result.access_token;
+    const refreshToken = result.refresh_token;
+
+    if (!accessToken) throw new Error('Токен не получен');
+    setToken(accessToken);
+    localStorage.setItem('token', accessToken);
+    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    localStorage.setItem('refresh_token', refreshToken);
+
+    const profileRes = await fetch(`${BaseUrl}/v1/profile`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!profileRes.ok) {
+      throw new Error('Ошибка при получении профиля');
+    }
+
+    const userData: User = await profileRes.json();
+
+    setUser(userData);
+    setRole(userData.role as Role);
+    console.log('Установлена роль в контекст:', userData.role);
+    console.log('userdata role', userData.role)
+    localStorage.setItem('user', JSON.stringify(userData));
+  } catch (error) {
+    console.error('SignIn Error:', error);
+    throw error;
+  }
+};
+
 
   const signOut = () => {
     setToken(null);

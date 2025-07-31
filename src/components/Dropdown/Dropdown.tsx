@@ -40,8 +40,9 @@ export default function Select({
           name={name}
           value={value}
           onChange={onChange}
-          className="custom-input custom-select"
+          className="custom-select"
           style={style}
+
         >
           <option value="" disabled>
             {placeholderOption}

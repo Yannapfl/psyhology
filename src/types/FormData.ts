@@ -1,12 +1,9 @@
 export type FormData = {
   country: string;
   timezone: string;
-  conditions: string[];
-  relationships: string[];
-  work: string[];
-  lifeEvents: string[];
-  specificRequests: string[];
-  therapyApproach: string[];
+  gender: string;
+  language: string;
+  specificRequests: number[];
   schedule: string[];
   paymentMethod: string;
 };

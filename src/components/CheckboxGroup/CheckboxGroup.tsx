@@ -3,11 +3,15 @@ import "./CheckboxGroup.css";
 import Image from "next/image";
 import arrow from "../../../public/icons/arrow_checkbox.svg";
 
+type StringOption = string;
+type ObjectOption = { label: string; value: string | number };
+type Option = StringOption | ObjectOption;
+
 type Props = {
   label: string;
-  options: string[];
-  values: string[];
-  onChange: (value: string) => void;
+  options: Option[];
+  values: (string | number)[];
+  onChange: (value: string | number) => void;
 };
 
 const MAX_VISIBLE = 6;
@@ -24,20 +28,27 @@ export default function CheckboxGroup({
   const hiddenCount = options.length - MAX_VISIBLE;
 
   return (
-    <div style={{   marginBottom: '32px'}} className="checkbox-block">
+    <div style={{ marginBottom: "32px" }} className="checkbox-block">
       <div className="checkbox-group">
         <h4>{label}</h4>
         <div className="checkbox-grid">
-          {visibleOptions.map((option) => (
-            <label key={option} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={values.includes(option)}
-                onChange={() => onChange(option)}
-              />
-              {option}
-            </label>
-          ))}
+          {visibleOptions.map((option) => {
+            const label =
+              typeof option === "string" ? option : option.label;
+            const value =
+              typeof option === "string" ? option : option.value;
+
+            return (
+              <label key={value} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={values.includes(value)}
+                  onChange={() => onChange(value)}
+                />
+                {label}
+              </label>
+            );
+          })}
         </div>
       </div>
 

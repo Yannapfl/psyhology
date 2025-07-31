@@ -97,6 +97,11 @@ input {
   font-weight: 400;
 }
 
+select {
+  margin: 0;
+  height: 100%;
+}
+
 hr {
   color: #747d6f15;
 }
@@ -133,6 +138,10 @@ tr {
 thead {
   background: #949494;
   color: white;
+}
+
+textarea {
+  width: 100%;
 }
 
 button {

@@ -16,11 +16,13 @@ type LoginModalProps = {
 
 export default function LoginModal({ role }: LoginModalProps) {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
+
   const titleModal =
     role === "client"
       ? "Войдите, чтобы продолжить свои консультации"
       : "Войдите, чтобы начать работу с клиентами";
+
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [checkedAuthMemory, setCheckedAuthMemory] = useState(false);
@@ -32,33 +34,32 @@ export default function LoginModal({ role }: LoginModalProps) {
     }
   }, [role, router]);
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  try {
-    await signIn({ email: login, password });
+    try {
+      await signIn({ email: login, password, role });
 
-    const storedUser = localStorage.getItem('user');
-    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-    const roleName = parsedUser?.role;
+      if (!user?.role) {
+        throw new Error("Не удалось определить роль пользователя");
+      }
 
-    switch (roleName) {
-      case "admin":
-      case "manager":
-        router.push(AppRoutes.clients); 
-        break;
-      case "psychologist":
-        router.push(AppRoutes.homepsyhology);
-        break;
-      case "client":
-      default:
-        router.push(AppRoutes.homeclient);
+      switch (user.role) {
+        case "admin":
+        case "manager":
+          router.push(AppRoutes.clients);
+          break;
+        case "psychologist":
+          router.push(AppRoutes.homepsyhology);
+          break;
+        case "client":
+        default:
+          router.push(AppRoutes.homeclient);
+      }
+    } catch (err) {
+      console.error("Ошибка при входе:", err);
     }
-  } catch {
-    console.error("Ошибка при входе");
-  }
-};
-
+  };
 
   if (!role) {
     return null;
@@ -81,7 +82,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             onChange={(e) => setLogin(e.target.value)}
           />
         </div>
-<div className="input-wrapper password-wrapper">
+        <div className="input-wrapper password-wrapper">
           <label className="label-input">Пароль</label>
           <div className="password-input-container">
             <input
@@ -110,13 +111,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               type="checkbox"
               checked={checkedAuthMemory}
               onChange={() => setCheckedAuthMemory(!checkedAuthMemory)}
-              className={`checkbox-squared ${
-                checkedAuthMemory ? "checked" : ""
-              }`}
+              className={`checkbox-squared ${checkedAuthMemory ? "checked" : ""}`}
             />
             <p>Запомнить меня</p>
           </div>
-
           <a href="###" className="a-login">Забыли пароль?</a>
         </div>
         <div className="button-group">

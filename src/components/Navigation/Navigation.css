@@ -30,13 +30,18 @@
 }
 
 .active-link-high,
-.active-link-bottom {
+.active-link-bottom,
+.active-link-middle{
   background-color: #10603C;
   color: white;
 }
 
 .active-link-high{
       border-radius: 8px 8px 0 0;
+}
+
+.active-link-middle {
+  border-radius: 0 0 0 0;
 }
 
 .active-link-bottom {
