@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthContextType, Role, SignInRequest, User } from '@/types/AuthTypes';
 import { BaseUrl } from '@/constants/BaseUrl';
 import { useRole } from './RoleContext';
-import api from '@/utils/api';
+import api, { setApiToken } from '@/utils/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -68,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Установлена роль в контекст:', userData.role);
     console.log('userdata role', userData.role)
     localStorage.setItem('user', JSON.stringify(userData));
+    setApiToken(accessToken); 
   } catch (error) {
     console.error('SignIn Error:', error);
     throw error;

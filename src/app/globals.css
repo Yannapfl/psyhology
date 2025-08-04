@@ -110,8 +110,13 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 12px;
+  overflow: auto;
+  margin-right: 30px;
+  overflow-x: auto;
+   padding: 0 24px;       
+  max-width: 100vw;       
+  box-sizing: border-box;
 }
 
 th {
@@ -123,12 +128,19 @@ td {
     color: #1E1E1E
 }
 
+.td-image {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+}
+
 th, td {
-    font-size: 12px;
+  font-size: 12px;
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e2e2e2;
-  border-right: 1px solid #e2e2e2
+  border-right: 1px solid #e2e2e2;
 }
 
 tr {
@@ -138,10 +150,16 @@ tr {
 thead {
   background: #949494;
   color: white;
+  border-radius: 8px;
 }
 
 textarea {
   width: 100%;
+  border: 1px solid #94949431;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 button {
@@ -187,6 +205,26 @@ button {
   color: #1E1E1E;
   width: min-content;
   padding: 0;
+}
+
+.custom-checkbox {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  text-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.custom-checkbox input {
+  margin: 0;
+  padding: 0;
+  width: 16px;
+  height: 16px;
 }
 
 

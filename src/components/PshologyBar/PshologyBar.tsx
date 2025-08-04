@@ -14,7 +14,7 @@ export default function PsyhologyBar() {
   useEffect(() => {
     const checkPreferencesStatus = async () => {
       try {
-        const res = await api.get("/v1/users/profile/preferences/status");
+        const res = await api.get("/v1/profile/preferences/status");
         setIsFilled(res.data.message.toLowerCase() === "true");
         console.log(res.data.message)
       } catch (error) {

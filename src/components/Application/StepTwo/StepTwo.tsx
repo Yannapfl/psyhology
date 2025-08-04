@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import CheckboxGroup from "@/components/CheckboxGroup/CheckboxGroup";
 import MultiSelectGroup from "@/components/MultiSelectGroup/MultiSelectGroup";
-import { FormData } from "@/types/FormData";
+import { FormDataPsy } from "@/types/FormData";
 import "./StepTwo.css";
 import api from "@/utils/api";
 
 type Props = {
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  formData: FormDataPsy;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataPsy>>;
   onBack: () => void;
   onSubmit: () => void;
 };
 
 type Topic = {
+  ID: number;
+  Title: string;
+};
+
+type Method = {
   ID: number;
   Title: string;
 };
@@ -25,10 +30,10 @@ export default function StepTwo({
 }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
-  
+  const [methods, setMethods] = useState<Method[]>([]);
 
   const handleSingleValue = <
-    K extends keyof Pick<FormData, "gender" | "language" | "paymentMethod">
+    K extends keyof Pick<FormDataPsy, "language" | "paymentMethod">
   >(
     key: K,
     value: string[]
@@ -37,54 +42,67 @@ export default function StepTwo({
   };
 
   const handleMultiValue = <
-    K extends keyof Pick<FormData, "schedule" | "specificRequests">
-  >(
-    key: K,
-    value: string[]
-  ) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleCheckbox = (
-  key: keyof Pick<FormData, "specificRequests">,
-  value: string | number
+  K extends keyof Pick<FormDataPsy, "schedule" | "specificRequests" | "therapyMethods">
+>(
+  key: K,
+  value: string[]
 ) => {
-  const id = typeof value === "string" ? parseInt(value, 10) : value;
-
   setFormData((prev) => {
-    const list = prev[key];
-    return {
-      ...prev,
-      [key]: list.includes(id)
-        ? list.filter((item) => item !== id)
-        : [...list, id],
-    };
+    if (key === "specificRequests" || key === "therapyMethods") {
+      const parsed = value.map((v) => parseInt(v, 10));
+      return { ...prev, [key]: parsed as FormDataPsy[K] };
+    } else {
+      return { ...prev, [key]: value as FormDataPsy[K] };
+    }
   });
 };
 
 
-useEffect(() => {
-  const fetchTopics = async () => {
-    try {
-      const response = await api.get("/v1/topics");
-      setTopics(response.data);
-    } catch (err) {
-      console.error("Ошибка при загрузке тем:", err);
-    }
+  const handleCheckbox = (
+    key: keyof Pick<FormDataPsy, "specificRequests" | "therapyMethods">,
+    value: string | number
+  ) => {
+    const id = typeof value === "string" ? parseInt(value, 10) : value;
+
+    setFormData((prev) => {
+      const list = prev[key] ?? [];
+
+      return {
+        ...prev,
+        [key]: list.includes(id)
+          ? list.filter((item) => item !== id)
+          : [...list, id],
+      };
+    });
   };
 
-  fetchTopics();
-}, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [topicsRes, methodsRes] = await Promise.all([
+          api.get("/v1/topics"),
+          api.get("/v1/therapy-methods"),
+        ]);
+
+        setTopics(topicsRes.data?.data || topicsRes.data || []);
+        setMethods(methodsRes.data?.data || methodsRes.data || []);
+      } catch (err) {
+        console.error("Ошибка при загрузке данных:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = () => {
     if (
-      !formData.gender ||
       !formData.language ||
       !formData.paymentMethod ||
       !formData.country ||
       !formData.timezone ||
       formData.schedule.length === 0 ||
-      formData.specificRequests.length === 0
+      formData.specificRequests.length === 0 ||
+      formData.therapyMethods?.length === 0
     ) {
       setError("Пожалуйста, заполните все обязательные поля.");
       return;
@@ -102,8 +120,18 @@ useEffect(() => {
           label: topic.Title,
           value: topic.ID,
         }))}
-        values={formData.specificRequests}
+        values={formData.specificRequests || []}
         onChange={(id) => handleCheckbox("specificRequests", id)}
+      />
+
+      <CheckboxGroup
+        label="Психотерапевтический подход"
+        options={methods.map((method) => ({
+          label: method.Title,
+          value: method.ID,
+        }))}
+        values={formData.therapyMethods || []}
+        onChange={(id) => handleCheckbox("therapyMethods", id)}
       />
 
       <MultiSelectGroup
@@ -113,8 +141,6 @@ useEffect(() => {
         onChange={(val) => handleSingleValue("language", val)}
         maxSelectable={2}
       />
-
-      
 
       <MultiSelectGroup
         label="Пожелания по графику"

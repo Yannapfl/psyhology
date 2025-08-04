@@ -45,3 +45,23 @@
   background-color: #94a3b8;
   cursor: not-allowed;
 }
+
+.multi-select-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.multi-select-title h4,
+.multi-select-title h5 {
+  margin: 0;
+}
+
+.multi-select-title h5 {
+  color: #949494;
+  font-size: 14px;
+}
+
+.description-application input {
+  height: 130px;
+}

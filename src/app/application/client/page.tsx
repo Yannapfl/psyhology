@@ -5,7 +5,7 @@ import ApplicationClient from "@/components/ApplicationClient/ApplicationClient"
 import Layout from "@/components/Layout/Layout";
 import StepSwitcher from "@/components/StepSwitcher/StepSwitcher";
 import { AppRoutes } from "@/constants/AppRoutes";
-import { FormData } from "@/types/FormData";
+import { FormDataClient } from "@/types/FormData";
 import api from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export default function ApplcationClientPage() {
   const [step, setStep] = useState(1);
   const router = useRouter();
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormDataClient>({
     country: "",
     timezone: "",
     specificRequests: [],
@@ -52,18 +52,17 @@ const handleSubmit = async () => {
 };
 
 
-  const isStepOneComplete = formData.country && formData.timezone;
-
   return (
     <Layout>
       <div style={{ width: "80%", margin: "0 auto" }}>
         <StepSwitcher activeStep={step} />
         {step === 1 && (
-          <StepOne
-            formData={formData}
-            setFormData={setFormData}
-            onNext={() => isStepOneComplete && setStep(2)}
-          />
+          <StepOne<FormDataClient>
+  formData={formData}
+  setFormData={setFormData}
+  onNext={() => setStep(2)}
+/>
+
         )}
         {step === 2 && (
           <ApplicationClient

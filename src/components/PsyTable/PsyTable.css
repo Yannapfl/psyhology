@@ -1,0 +1,66 @@
+.psy-table table {
+  overflow-x: auto;
+  padding: 0 24px;  
+  box-sizing: border-box;  
+  max-width: 100%;        
+}
+
+.td-with-button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-height: fit-content;
+}
+
+.status-tag {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.status-green {
+  background: #10603C1A;
+  color: #10603C
+}
+
+.status-yellow {
+  background: #E2B5001A;
+  color: #E2B500;
+}
+
+.status-red {
+  background: #C921401A;
+  color: #C92140;
+}
+
+.status-purple {
+  color: #5856D6;
+  background-color: #5856D61A;
+}
+
+.status-premium {
+  color: #FF9500;
+  background-color: #FF95001A;
+}
+
+.clients-list-block {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.clients-list-block td,
+.clients-list-block th {
+  border: none;
+}
+
+.clients-list-block tr:last-child {
+  border-bottom: none; 
+}
+
+.clients-list-block tr {
+  border-bottom: 1px solid #1e1e1e1a; 
+}

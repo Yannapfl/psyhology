@@ -6,24 +6,25 @@
 
 .status {
   padding: 6px 12px;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 12px;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .status-green {
-  background: #e0f3eb;
-  color: #3e9c7b;
+  background: #10603C1A;
+  color: #10603C
 }
 
 .status-yellow {
-  background: #fff5cc;
-  color: #b58d00;
+  background: #E2B5001A;
+  color: #E2B500;
 }
 
 .status-red {
-  background: #ffe2e2;
-  color: #d84d4d;
+  background: #C921401A;
+  color: #C92140;
 }
 
 .td-image {

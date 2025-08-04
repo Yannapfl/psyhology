@@ -18,7 +18,7 @@ export default function Profile({ onClick }: ProfileProps) {
   useEffect(() => {
     const fetchProfile = async () => {
         try {
-            const response = await api.get("/v1/users/profile");
+            const response = await api.get("/v1/profile");
             const data = response.data;
 
             setProfileData({

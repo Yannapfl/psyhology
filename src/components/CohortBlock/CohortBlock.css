@@ -1,0 +1,9 @@
+.cohort-block {
+    display: block;
+    width: 290px;
+    height: 220px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+}
+

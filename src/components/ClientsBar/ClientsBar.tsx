@@ -2,6 +2,7 @@ import { useState } from "react";
 import Switcher from "../Switcher/Switcher";
 import "./ClientsBar.css";
 import ActiveClientCard from "./ActiveClientCard/ActiveClientCard";
+import ChangeClient from "../ChangeClient/ChangeClient";
 
 export default function ClientsBar() {
   const [active, setActive] = useState(0);
@@ -37,7 +38,7 @@ export default function ClientsBar() {
             />
           </div>
         ) : (
-          "Показ замены клиента"
+          <ChangeClient />
         )}
       </div>
     </div>
