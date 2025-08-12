@@ -11,5 +11,10 @@ export const AppRoutes = {
     psyhologists: '/admin/psyhologists',
     changes: '/admin/changes',
     complaints: '/admin/complaints',
-    flows: '/admin/flows'
+    flows: '/admin/flows',
+    flowById: (id: number | string) => `/admin/flows/${id}`,
+    flowByIdClients: (id: number | string) => `/admin/flows/${id}/clients`,
+    flowByIdPsychologists: (id: number | string) => `/admin/flows/${id}/psychologists`,
+    flowByIdReplacements: (id: number | string) => `/admin/flows/${id}/replacements`,
+    flowByIdComplaint: (id: number | string) => `/admin/flows/${id}/complaint`,
 }

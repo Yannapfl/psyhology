@@ -10,14 +10,20 @@ export interface SignInResponse {
   user: User;
 }
 
+export type Role = 'client' | 'psychologist' | 'admin' | 'manager' ;
 
 export interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
   email: string;
-  role: string;
+  phone2call: string;
+  phone2whatsapp: string;
+  name4telegram: string;
+  city: string;
+  role: Role;
   cohort_id: number;
 }
-
-export type Role = 'client' | 'psychologist' | 'admin' | 'manager' ;
 
 
 export interface AuthContextType {

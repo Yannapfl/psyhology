@@ -43,7 +43,7 @@ export default function ClientsPage() {
           <button className="filter-button">Очистить фильтр</button>
         </div>
 
-        <ClientsTable />
+        <ClientsTable id={1} />
 
         {openAddModal && (
           <ModalAddClient onClose={() => setOpenAddModal(false)} />

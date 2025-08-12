@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import Image from "next/image";
 import profile from "../../../public/icons/profile.svg";
@@ -9,59 +9,21 @@ import arrowDown from "../../../public/icons/arrow_down.svg";
 import arrowUp from "../../../public/icons/arrow_up.svg";
 import "./PsyTable.css";
 import { statusColor } from "@/utils/statusColor";
+import { PsychologistList } from "@/types/ApiTypes";
+import api from "@/utils/api";
+import formatDate from "@/utils/formatDate";
 
-const psychologists = [
-  {
-    id: 1,
-    name: "Беловицкая Ольга",
-    phone: "+7 702 456 78 90",
-    telegram: "@mynick",
-    email: "mymail@gmail.com",
-    education: "Прикладная психология и коучинг",
-    country: "Казахстан",
-    internationalAcc: true,
-    tariff: "Базовый",
-    startDate: "21.07.2025",
-    educationStatus: "Завершен",
-    countClients: 8,
-    needClients: 8,
-    readyStatus: "Все распределены",
-    changeCount: 0,
-    comments: "-",
-    clients: [
-      {
-        id: 101,
-        name: "Диана Карим",
-        phone: "993726128393",
-        telegram: "@fidilina",
-        status: "Вышел из проекта",
-        comment: "Причина выхода клиента...",
-      },
-      {
-        id: 102,
-        name: "Айнур Багеева",
-        phone: "993726128393",
-        telegram: "@fidilina",
-        status: "Распредел",
-        comment: "",
-      },
-      {
-        id: 103,
-        name: "Диана Карим",
-        phone: "993726128393",
-        telegram: "@fidilina",
-        status: "Возварт",
-        comment: "Причина выхода клиента...",
-      },
-    ],
-  },
-];
+type Props = {
+  id?: number | string;
+};
 
-export default function ExpandableTable() {
+export default function PsyTable({ id } : Props) {
+  const [ data, setData ] = useState<PsychologistList>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
-  const totalPages = Math.ceil(psychologists.length / perPage);
-  const pageData = psychologists.slice(
+  const totalPages = Math.ceil(data.length / perPage);
+  const pageData = data.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
@@ -70,6 +32,37 @@ export default function ExpandableTable() {
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+    useEffect(() => {
+    const abort = new AbortController();
+
+    const fetchClients = async () => {
+      try {
+        setIsLoading(true);
+
+        const endpoint = id ? `/v1/${id}/psychologists` : `/v1/1/psychologists`;
+
+        const res = await api.get<PsychologistList>(endpoint, { signal: abort.signal });
+        setData(res.data);
+        setCurrentPage(1);
+      } catch (err: unknown) {
+        const name = (err as { name?: string })?.name;
+        if (name === "CanceledError" || name === "AbortError") {
+          return;
+        }
+        console.error("Ошибка загрузки психологов:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClients();
+    return () => abort.abort();
+  }, [id]);
+
+  if (isLoading) {
+    return <div className="table-wrapper">Загрузка...</div>;
+  }
 
   return (
     <>
@@ -111,40 +104,40 @@ export default function ExpandableTable() {
                     </button>
                     <div className="td-image" style={{textWrap: 'nowrap'}}>
                       <Image src={profile} alt="profile" width={28} />
-                      {psy.name}
+                      {psy.last_name} {psy.first_name}
                     </div>
                   </div>
                 </td>
-                <td style={{ textWrap: "nowrap" }}>{psy.phone}</td>
-                <td style={{ textWrap: "nowrap" }}>{psy.telegram}</td>
+                <td style={{ textWrap: "nowrap" }}>{psy.phone2call}</td>
+                <td style={{ textWrap: "nowrap" }}>{psy.name4telegram}</td>
                 <td style={{ textWrap: "nowrap" }}>{psy.email}</td>
                 <td>{psy.education}</td>
                 <td>{psy.country}</td>
-                <td>{psy.internationalAcc == true ? "Есть" : "Нет"}</td>
+                <td>{psy.international_account == true ? "Есть" : "Нет"}</td>
                 <td>
-                  <span className={`status-tag ${statusColor(psy.tariff)}`}>
-                    {psy.tariff}
+                  <span className={`status-tag ${statusColor(psy.plan)}`}>
+                    {psy.plan}
                   </span>
                 </td>
-                <td>{psy.startDate}</td>
-                <td>
-                  <span
-                    className={`status-tag ${statusColor(psy.educationStatus)}`}
-                  >
-                    {psy.educationStatus}
-                  </span>
-                </td>
-                <td>{psy.countClients}</td>
-                <td>{psy.needClients}</td>
+                <td>{formatDate(psy.start_at)}</td>
                 <td>
                   <span
-                    className={`status-tag ${statusColor(psy.readyStatus)}`}
+                    className={`status-tag ${statusColor(psy.education_status)}`}
                   >
-                    {psy.readyStatus}
+                    {psy.education_status}
                   </span>
                 </td>
-                <td>{psy.changeCount}</td>
-                <td>{psy.comments}</td>
+                <td>{psy.number_current_clients}</td>
+                <td>{psy.number_clients_able2serve}</td>
+                <td>
+                  <span
+                    className={`status-tag ${statusColor(psy.readiness_status)}`}
+                  >
+                    {psy.readiness_status}
+                  </span>
+                </td>
+                <td>{psy.amount_of_replacements}</td>
+                <td>{psy.remark}</td>
               </tr>
 
               {expandedId === psy.id && (
@@ -156,20 +149,20 @@ export default function ExpandableTable() {
                       {psy.clients.map((client, idx) => (
                         <tr key={client.id} className="client-row">
                           <td>
-                            {idx + 1}. {client.name}
+                            {idx + 1}. {client.last_name} {client.first_name}
                           </td>
-                          <td>{client.phone}</td>
-                          <td>{client.telegram}</td>
+                          <td>{client.phone2call}</td>
+                          <td>{client.name4telegram}</td>
                           <td>
                             <span
                               className={`status-tag ${statusColor(
-                                client.status
+                                client.distributionStatus
                               )}`}
                             >
-                              {client.status}
+                              {client.distributionStatus}
                             </span>
                           </td>
-                          <td style={{ width: '70%'}}>{client.comment}</td>
+                          <td style={{ width: '45%'}}>{client.remark}</td>
                         </tr>
                       ))}
                     </div>

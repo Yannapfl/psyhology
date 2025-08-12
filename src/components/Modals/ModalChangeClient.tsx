@@ -34,7 +34,7 @@ export default function ModalChangeClient({ onClose,
         </h5>
 
         <div className="input-count-sessions">
-            <label>Сколько сессий прошло?</label>
+            <label>Сколько сессий уже прошло?</label>
             <input type='number' value={countSessions} onChange={(e) => setCountSessions(Number(e.target.value))}></input>
         </div>
 

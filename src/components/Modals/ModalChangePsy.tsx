@@ -1,27 +1,65 @@
 import "./Modals.css";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import close from "../../../public/icons/Close.svg";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "@/utils/api";
 
-export default function ModalChangePsy({ onClose,
-  onComplaint,
-  onSuccess,
-}: {
+type Props = {
   onClose: () => void;
   onComplaint: () => void;
   onSuccess: () => void;
-}) {
+};
+
+const REASONS = [
+  "Несовпадение графиков",
+  "Неудобный способ оплаты",
+  "Отсутствие контакта с психологом",
+  "Консультации оказались неэффективными",
+  "Метод работы психолога не подошел",
+  "Языковой барьер",
+  "Другая причина",
+] as const;
+
+export default function ModalChangePsy({
+  onClose,
+  onComplaint,
+  onSuccess,
+}: Props) {
+  const { user } = useAuth();
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [otherReason, setOtherReason] = useState<string>("");
+   const [countSessions, setCountSessions] = useState('');
+  const isOther = selectedReason === "Другая причина";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedReason(e.target.value);
   };
 
-  const handleSubmit = () => {
-    alert(selectedReason);
-    onSuccess(); 
-  };
+   const isValid = useMemo(() => {
+    const sessionsOk = !!countSessions && Number(countSessions) > 0;
+    const reasonText = isOther ? otherReason.trim() : (selectedReason ?? "").trim();
+    const reasonOk = reasonText.length > 0;
+    return sessionsOk && reasonOk;
+  }, [countSessions, selectedReason, otherReason, isOther]);
 
+  const handleSubmit = async () => {
+    if (!isValid) return;
+ 
+    const payload = {
+      amount_of_sessions: Number(countSessions),
+      client_id: user?.id,
+      reason2replace: selectedReason === null ? "" : selectedReason, 
+      other_reason: isOther ? otherReason.trim() : "",             
+    };
+
+    try {
+      await api.post(`v1/replacements`, payload);
+      onSuccess();
+    } catch (error) {
+      console.error('Ошибка отправка формы замены', error)
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -39,71 +77,39 @@ export default function ModalChangePsy({ onClose,
           количество замен ограничено.
         </h5>
 
+        <div className="input-count-sessions">
+            <input type='number' value={countSessions} onChange={(e) => setCountSessions((e.target.value))} placeholder="Сколько сессий уже прошло?"></input>
+        </div>
+
         <div className="radio-group">
           <h3 style={{ fontWeight: "600", marginBottom: "4px" }}>
             Выберите причину отмены
           </h3>
 
-          <label>
-            <input
-              type="radio"
-              className="radio-box"
-              name="reason"
-              value="Несовпадение графиков"
-              onChange={handleChange}
-            />
-            Несовпадение графиков
-          </label>
+          {REASONS.map((reason) => (
+            <label key={reason}>
+              <input
+                type="radio"
+                name="reason"
+                value={reason}
+                onChange={handleChange}
+              />
+              {reason}
+            </label>
+          ))}
 
-          <label>
-            <input
-              type="radio"
-              name="reason"
-              value="Неудобный способ оплаты"
-              onChange={handleChange}
-            />{" "}
-            Неудобный способ оплаты
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="reason"
-              value="Отсутствие контакта с психологом"
-              onChange={handleChange}
-            />{" "}
-            Отсутствие контакта с психологом
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="reason"
-              value="Консультации оказались неэффективными"
-              onChange={handleChange}
-            />{" "}
-            Консультации оказались неэффективными
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="reason"
-              value="Метод работы психолога не подошел"
-              onChange={handleChange}
-            />{" "}
-            Метод работы психолога не подошел
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="reason"
-              value="Языковой барьер"
-              onChange={handleChange}
-            />{" "}
-            Языковой барьер
-          </label>
+          {isOther && (
+            <textarea
+              placeholder="Опишите вашу причину"
+              value={otherReason}
+              onChange={(e) => setOtherReason(e.target.value)}
+              className="textarea-reason"
+            />
+          )}
         </div>
 
         <div className="button-group">
-          <button className="btn-light-green " onClick={onClose}>
+          <button className="btn-light-green" onClick={onClose}>
             ОТМЕНА
           </button>
           <button className="btn" onClick={handleSubmit}>
@@ -115,7 +121,6 @@ export default function ModalChangePsy({ onClose,
           Пожаловаться на психолога
         </button>
       </div>
-
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { PsyProvider } from "@/contexts/PsyContext";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -26,9 +25,7 @@ export default function RootLayout({
       <body className={montserrat.className}>
         <RoleProvider>
           <AuthProvider>
-            <PsyProvider>
 {children}
-            </PsyProvider>
             </AuthProvider>
         </RoleProvider>
       </body>

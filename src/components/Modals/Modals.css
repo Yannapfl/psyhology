@@ -50,6 +50,15 @@
   width: 40%
 }
 
+.input-count-sessions {
+  margin-top: 16px;
+}
+
+.input-count-sessions input {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+
 .radio-group {
   display: flex;
   flex-direction: column;

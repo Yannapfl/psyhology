@@ -1,15 +1,23 @@
 import { Cohort } from '@/types/CohortTypes';
 import './CohortBlock.css'
+import formatDate from '@/utils/formatDate';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   cohort: Cohort;
 };
 
 export default function CohortBlock({ cohort}: Props) {
+    const router = useRouter();
+    
+    const handleClick = () => {
+    router.push(`/admin/flows/${cohort.ID}`);
+  };
+
     return (
-        <div className='cohort-block'>
-            <h3>{cohort.Name}</h3>
-            <h6>{`${cohort.StartAt} - ${cohort.EndAt}`}</h6>
+        <div className='cohort-block' onClick={handleClick}>
+            <h3 style={{ fontWeight: '700', fontSize: '18px', margin: '0'  }}>{cohort.Name}</h3>
+            <h6>{`${formatDate(cohort.StartAt)} - ${formatDate(cohort.EndAt)}`}</h6>
             <hr />
             <div className='amount-table'>
                 <div className='amount-stat'>

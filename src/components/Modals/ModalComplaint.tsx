@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./Modals.css";
 import Image from "next/image";
 import close from "../../../public/icons/Close.svg";
+import api from "@/utils/api";
 
 export default function ModalComplaint({
   onClose,
@@ -12,12 +13,20 @@ export default function ModalComplaint({
 }) {
   const [text, setText] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
      if (text.trim() === "") {
       alert("Пожалуйста, опишите ситуацию перед отправкой жалобы.");
       return;
     }
-    alert(text);
+    
+    try {
+      await api.post(`v1/replacements/${1}/complaints`, {
+        description: text,
+      })
+      onClose();
+    } catch (error) {
+      console.error('Ошибка отправка формы жалобы', error)
+    }
   };
 
   const handleReturn = () => {

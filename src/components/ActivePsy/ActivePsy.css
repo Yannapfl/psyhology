@@ -1,46 +1,50 @@
 .psy-card {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.psy-info, .psy-profile {
+.psy-info,
+.psy-profile {
   background-color: #fff;
   border-radius: 12px;
   padding: 16px;
 }
 
 .psy-profile {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 16px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
 }
 
+/* База — без обрезки (короткий текст показывается полностью) */
 .description {
   font-size: 14px;
   line-height: 1.5;
-  position: relative;
   color: #1e1e1e;
+  position: relative;
+  margin: 0;
+}
 
+/* Кламп и градиент включаем только когда реально нужно */
+.description.clamped {
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 5;          /* сколько строк показывать */
   -webkit-box-orient: vertical;
 }
 
-.description::after {
+.description.clamped::after {
   content: "";
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  inset: auto 0 0 0;              /* bottom gradient */
   height: 1.5em;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #ffffff 100%);
 }
 
+/* Раскрытое состояние */
 .description.expanded {
-  -webkit-line-clamp: unset;
   display: block;
 }
 
@@ -48,7 +52,7 @@
   content: none;
 }
 
-
+/* Кнопка */
 .show-more {
   margin-top: 8px;
   color: #006400;
@@ -56,10 +60,14 @@
   font-size: 14px;
   cursor: pointer;
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
+.show-more:hover { text-decoration: underline; }
+
 .arrow-icon {
-  margin-left: 6px;
   transition: transform 0.3s ease;
 }
 
@@ -67,12 +75,12 @@
   transform: rotate(180deg);
 }
 
+.psy-empty {
+  width: 80%;
+}
+
 .psy-empty h3 {
   color: #949494;
   line-height: 24px;
   margin: 0;
-}
-
-.psy-empty {
-  width: 80%;
 }

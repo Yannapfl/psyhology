@@ -1,9 +1,10 @@
 import "./Navigation.css";
 import Profile from "./Profile/Profile";
 import Image from "next/image";
-import profile from "../../../public/icons/profile.svg";
+import profile from "../../../public/icons/greyUser.svg";
 import settings from "../../../public/icons/settings.svg";
 import { useRole } from "@/contexts/RoleContext";
+import application from '../../../public/icons/application.svg'
 
 type NavigationProps = {
   setSection: (section: "application" | "relationship" | "settings") => void;
@@ -15,7 +16,6 @@ export default function Navigation({
   currentSection,
 }: NavigationProps) {
   const { role } = useRole();
-  console.log(role, "role");
 
   const relationshipSection =
     role === "client" ? "Мой психолог" : "Мои клиенты";
@@ -65,8 +65,8 @@ export default function Navigation({
           onClick={() => setSection("settings")}
         >
           <Image
-            src={settings}
-            alt="settings"
+            src={application}
+            alt="app"
             width={24}
             className={currentSection === "settings" ? "white-icon" : ""}
           />

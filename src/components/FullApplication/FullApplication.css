@@ -1,0 +1,26 @@
+.full-application h1 {
+    margin-bottom: 32px;
+}
+
+.two-flex-form-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 16px;
+    padding: 16px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+
+}
+
+.data-application {
+    display: block;
+    justify-content: flex-start;
+}
+
+.data-application h3 {
+    margin: 0;
+}
+
+.data-application h6 {
+    margin: 0;
+}

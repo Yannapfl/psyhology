@@ -9,13 +9,16 @@ import Select from "../Dropdown/Dropdown";
 import Switcher from "../Switcher/Switcher";
 import { FormClient } from "@/types/FormClient";
 import DetailsBlock from "../DetailsBlock/DetailsBlock";
+import api from "@/utils/api";
+import { ClientResponse } from "@/types/ApiTypes";
+import { apiToForm } from "@/utils/apiToForm";
 
 type Props = {
   onClose: () => void;
-  initialData?: Partial<FormClient>;
+  clientId: number | string;
 };
 
-export default function ModalEditClient({ onClose, initialData }: Props) {
+export default function ModalEditClient({ onClose, clientId }: Props) {
   const [crm, setCrm] = useState("");
   const [active, setActive] = useState(0);
   const [formData, setFormData] = useState<FormClient>({
@@ -38,10 +41,16 @@ export default function ModalEditClient({ onClose, initialData }: Props) {
   });
 
   useEffect(() => {
-    if (initialData) {
-      setFormData((prev) => ({ ...prev, ...initialData }));
+    const fetchData = async () => {
+      try {
+        const response = await api.get<ClientResponse>(`v1/1/clients/${clientId}`)
+        setFormData(apiToForm(response.data))
+      } catch (error) {
+        console.error('Ошибка загрузки данных пользователя', error)
+      }
     }
-  }, [initialData]);
+    fetchData();
+  }, [clientId]);
 
   const handleChange = (
     e: React.ChangeEvent<

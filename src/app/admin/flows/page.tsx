@@ -2,14 +2,21 @@
 
 import CohortBlock from "@/components/CohortBlock/CohortBlock";
 import LayoutAdmin from "@/components/Layout/LayoutAdmin/LayoutAdmin";
-import ModalAddPsy from "@/components/Modals/ModalAddPsy";
+import ModalAddCohort from "@/components/Modals/ModalAddCohort";
+import ModalSureCreateCohort from "@/components/Modals/ModalSureCreateCohort";
 import { Cohort } from "@/types/CohortTypes";
 import api from "@/utils/api";
 import { useEffect, useState } from "react";
 
 export default function Flows() {
-  const [openAddModal, setOpenAddModal] = useState(false);
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [newCohortData, setNewCohortData] = useState({
+    name: "",
+    startDate: "",
+    endDate: ""
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,6 +31,21 @@ export default function Flows() {
     fetchData();
   }, []);
 
+  const handleCreateFlow = async () => {
+    try {
+      const response = await api.post(`v1/cohorts`, {
+        end_at: new Date(newCohortData.endDate).toISOString(),
+        name: newCohortData.name,
+        start_at: new Date(newCohortData.startDate).toISOString(),
+      });
+      console.log('Поток создан', response.data)
+      setShowConfirmModal(false);
+    } catch (error) {
+      console.error('Ошибка при создании потока', error)
+    }
+    
+  };
+
   return (
     <LayoutAdmin>
       <div className="content-admin">
@@ -32,16 +54,32 @@ export default function Flows() {
             <h1>Все потоки</h1>
             <h1 style={{ color: "#949494" }}>120</h1>
           </div>
-          <button onClick={() => setOpenAddModal(true)}>+ Новый поток</button>
+          <button onClick={() => setShowAddModal(true)}>+ Новый поток</button>
         </div>
 
-        <div className="cohorts-page">
-            {cohorts.map((cohort) => (
-                <CohortBlock cohort={cohort} key={cohort.ID} />
-            ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+          {cohorts.map((cohort) => (
+            <CohortBlock cohort={cohort} key={cohort.ID} />
+          ))}
         </div>
 
-        {openAddModal && <ModalAddPsy onClose={() => setOpenAddModal(false)} />}
+        {showAddModal && (
+          <ModalAddCohort
+            onClose={() => setShowAddModal(false)}
+            onNext={(data) => {
+              setNewCohortData(data);
+              setShowAddModal(false);
+              setShowConfirmModal(true);
+            }}
+          />
+        )}
+
+        {showConfirmModal && (
+          <ModalSureCreateCohort
+            onClose={() => setShowConfirmModal(false)}
+            onSuccess={handleCreateFlow}
+          />
+        )}
       </div>
     </LayoutAdmin>
   );

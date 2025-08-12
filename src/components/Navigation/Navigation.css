@@ -37,7 +37,7 @@
 }
 
 .active-link-high{
-      border-radius: 8px 8px 0 0;
+      border-radius: 16px 16px 0 0;
 }
 
 .active-link-middle {
@@ -45,7 +45,7 @@
 }
 
 .active-link-bottom {
-      border-radius: 0 0 8px 8px;
+      border-radius: 0 0 16px 16px;
 }
 
 
@@ -59,4 +59,3 @@
 .white-icon {
   filter: brightness(0) invert(1); 
 }
-

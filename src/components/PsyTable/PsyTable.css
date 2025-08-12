@@ -14,6 +14,10 @@
   min-height: fit-content;
 }
 
+.td-with-button button {
+  width: 20px;
+}
+
 .status-tag {
   padding: 6px 12px;
   border-radius: 8px;
@@ -63,4 +67,10 @@
 
 .clients-list-block tr {
   border-bottom: 1px solid #1e1e1e1a; 
+}
+
+.client-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 7fr;
+  padding: 4px 0;
 }

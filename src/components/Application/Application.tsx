@@ -11,7 +11,6 @@ export default function Application() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    birthDate: "",
     phoneCall: "",
     phoneWhatsApp: "",
     phoneTelegram: "",
@@ -28,10 +27,9 @@ export default function Application() {
         setFormData({
           firstName: data.first_name || "",
           lastName: data.last_name || "",
-          birthDate: data.date_of_birth || "",
           phoneCall: data.phone2call || "",
           phoneWhatsApp: data.phone2whatsapp || "",
-          phoneTelegram: data.phone2telegram || "",
+          phoneTelegram: data.name4telegram || "",
           email: data.email || "",
           city: data.city || "",
         });
@@ -56,12 +54,12 @@ export default function Application() {
       <form className="form-container">
         <Input label="Имя" name="firstName" value={formData.firstName} onChange={handleChange} />
         <Input label="Фамилия" name="lastName" value={formData.lastName} onChange={handleChange} />
-        <Input label="Дата рождения" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} />
         <Input label="Номер телефона для звонка" name="phoneCall" value={formData.phoneCall} onChange={handleChange} />
         <Input label="Номер телефона WhatsApp" name="phoneWhatsApp" value={formData.phoneWhatsApp} onChange={handleChange} />
         <Input label="Номер телефона Telegram" name="phoneTelegram" value={formData.phoneTelegram} onChange={handleChange} />
         <Input label="Электронная почта" name="email" type="email" value={formData.email} onChange={handleChange} />
         <Dropdown
+          style={{paddingTop: '22px'}}
           label="Город"
           name="city"
           value={formData.city}

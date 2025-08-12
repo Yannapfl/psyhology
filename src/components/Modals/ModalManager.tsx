@@ -29,7 +29,7 @@ export default function ModalManager({
         <ModalComplaint
           onClose={() => {
             onChangeStatus();
-            setActiveModal("change")
+            setActiveModal(null)
           }}
           onSuccess={() => setActiveModal("change")}
         />

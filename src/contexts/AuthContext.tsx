@@ -62,11 +62,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const userData: User = await profileRes.json();
+    console.log("PROFILE DATA:", userData);
 
     setUser(userData);
     setRole(userData.role as Role);
-    console.log('Установлена роль в контекст:', userData.role);
-    console.log('userdata role', userData.role)
     localStorage.setItem('user', JSON.stringify(userData));
     setApiToken(accessToken); 
   } catch (error) {

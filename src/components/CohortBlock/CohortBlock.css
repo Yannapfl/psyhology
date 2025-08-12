@@ -1,9 +1,42 @@
 .cohort-block {
     display: block;
-    width: 290px;
-    height: 220px;
+    width: 260px;
+    height: 200px;
     background-color: white;
     border-radius: 8px;
     padding: 16px;
+    cursor: pointer;
 }
 
+.cohort-block:hover {
+    box-shadow: 0 4px 12px rgba(25, 58, 9, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.cohort-block h6 {
+    margin: 16px 0;
+}
+
+.cohort-block hr {
+    border: 1px solid #747D6F33;
+    margin: 16px -16px 16px -16px;
+}
+
+.amount-table {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+}
+
+.amount-table h4 {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+.amount-stat {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+}

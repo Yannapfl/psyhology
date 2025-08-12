@@ -129,7 +129,7 @@ export default function ClientsPage() {
 
         <PsyTable />
 
-        {openAddModal && <ModalAddPsy onClose={() => setOpenAddModal(false)} />}
+        {openAddModal && <ModalAddPsy onClose={() => setOpenAddModal(false)} cohortId={1} />}
       </div>
     </LayoutAdmin>
   );

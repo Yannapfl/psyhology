@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from "react";
 import "./PshologyBar";
 import Switcher from "../Switcher/Switcher";
@@ -15,8 +17,8 @@ export default function PsyhologyBar() {
     const checkPreferencesStatus = async () => {
       try {
         const res = await api.get("/v1/profile/preferences/status");
-        setIsFilled(res.data.message.toLowerCase() === "true");
-        console.log(res.data.message)
+        setIsFilled(res.data.message !== "true");
+        console.log(res.data.message, 'status')
       } catch (error) {
         console.error("Ошибка при получении статуса анкеты", error);
         setIsFilled(false);

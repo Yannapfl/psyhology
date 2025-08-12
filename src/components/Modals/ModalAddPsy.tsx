@@ -8,7 +8,12 @@ import Input from "../Input/Input";
 import Select from "../Dropdown/Dropdown";
 import api from "@/utils/api";
 
-export default function ModalAddPsy({ onClose }: { onClose: () => void }) {
+type Props = {
+  onClose: () => void;
+  cohortId: number | string;
+}
+
+export default function ModalAddPsy({ onClose, cohortId }: Props) {
   const [crm, setCrm] = useState("");
   const [distributionStatuses, setDistributionStatuses] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -32,8 +37,6 @@ export default function ModalAddPsy({ onClose }: { onClose: () => void }) {
     comments: "",
     distributionStatus: "",
   });
-
-  const cohortId = 1;
 
   useEffect(() => {
     const fetchStatuses = async () => {

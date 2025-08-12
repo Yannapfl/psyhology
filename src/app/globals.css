@@ -182,6 +182,16 @@ button {
   color: #10603C;
 }
 
+.btn-disabled {
+  color: #AAB3BE;
+  background-color: #6F7D7326;
+}
+
+.btn-red {
+  background-color: #C9214026;
+  color: #C92140;
+}
+
 .btn-text {
   padding: 0;
   background-color: transparent;
@@ -227,10 +237,4 @@ button {
   height: 16px;
 }
 
-
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+.time-muted { color: #A3B3ADB2; }
