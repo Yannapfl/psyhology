@@ -52,8 +52,8 @@ export type PsychologistClient = {
   phone2call: string;
   phone2whatsapp: string;
   role: string;
-  distributionStatus: string;
-  remark: string;
+  distribution_status: string;
+  comment: string;
 };
 
 export type TherapyMethod = {

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthContextType, Role, SignInRequest, User } from '@/types/AuthTypes';
-import { BaseUrl } from '@/constants/BaseUrl';
+import type { AxiosError } from 'axios';
+import { AuthContextType, Role, User } from '@/types/AuthTypes';
 import { useRole } from './RoleContext';
 import api, { setApiToken } from '@/utils/api';
 
@@ -11,88 +11,88 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const { setRole } = useRole();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-
-
-    if (storedToken) {
-      try {
+    const hydrate = async () => {
+      if (storedToken) {
         setToken(storedToken);
-      } catch (error) {
-        console.error('Ошибка при парсинге user из localStorage:', error);
-        localStorage.removeItem('user');
+        setApiToken(storedToken);
+        try {
+          const { data } = await api.get<User>('/v1/profile');
+          setUser(data);
+          setRole((data.role as Role) ?? null);
+          localStorage.setItem('user', JSON.stringify(data));
+        } catch (e) {
+          const err = e as AxiosError;
+          console.error('Автологин: не удалось получить профиль', err.message);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setApiToken(null);
+          setToken(null);
+          setUser(null);
+          setRole(null);
+        }
       }
-    }
-  }, []);
+      setIsHydrated(true);
+    };
+    void hydrate();
+  }, [setRole]);
 
-  const signIn = async (data: SignInRequest) => {
-  try {
-    const response = await fetch(`${BaseUrl}/v1/auth/sign-in`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+  const signIn: AuthContextType['signIn'] = async (data) => {
+    const authRes = await api.post<{ access_token?: string; refresh_token?: string }>(
+      '/v1/auth/sign-in',
+      { email: data.email, password: data.password, role: data.role }
+    );
 
-    if (!response.ok) {
-      throw new Error('Ошибка авторизации');
-    }
-
-    const result = await response.json();
-    const accessToken = result.access_token;
-    const refreshToken = result.refresh_token;
-
+    const accessToken = authRes.data?.access_token;
+    const refreshToken = authRes.data?.refresh_token;
     if (!accessToken) throw new Error('Токен не получен');
+
     setToken(accessToken);
+    setApiToken(accessToken);
     localStorage.setItem('token', accessToken);
-    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-    localStorage.setItem('refresh_token', refreshToken);
+    if (refreshToken) localStorage.setItem('refresh_token', refreshToken);
 
-    const profileRes = await fetch(`${BaseUrl}/v1/profile`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!profileRes.ok) {
-      throw new Error('Ошибка при получении профиля');
-    }
-
-    const userData: User = await profileRes.json();
-    console.log("PROFILE DATA:", userData);
+    const profileRes = await api.get<User>('/v1/profile');
+    const userData = profileRes.data;
 
     setUser(userData);
-    setRole(userData.role as Role);
+    setRole((userData.role as Role) ?? null);
     localStorage.setItem('user', JSON.stringify(userData));
-    setApiToken(accessToken); 
-  } catch (error) {
-    console.error('SignIn Error:', error);
-    throw error;
-  }
-};
 
+    if (data.remember) {
+      localStorage.setItem('remember_email', data.email);
+ 
+      const r = userData.role as Role;
+      if (r) localStorage.setItem('role', r);
+    } else {
+      localStorage.removeItem('remember_email');
+    }
+
+    return { user: userData, role: (userData.role as Role) ?? data.role ?? null };
+  };
 
   const signOut = () => {
     setToken(null);
     setUser(null);
+    setApiToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('refresh_token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, token, signIn, signOut, isHydrated }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
+  return ctx;
 };

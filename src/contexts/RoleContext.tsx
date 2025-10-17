@@ -2,45 +2,46 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-type Role = 'client' | 'psychologist' | 'admin' | 'manager' | null;
+export type Role = 'client' | 'psychologist' | 'admin' | 'manager' | null;
 
 interface RoleContextType {
   role: Role;
   setRole: (role: Role) => void;
+  isHydrated: boolean;
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export const RoleProvider = ({ children }: { children: React.ReactNode }) => {
   const [role, setRoleState] = useState<Role>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    const savedRole = localStorage.getItem('role') as Role | null;
-    if (savedRole === 'client' || savedRole === 'psychologist' || savedRole === 'admin' || savedRole === 'manager') {
-      setRoleState(savedRole);
+
+    const saved = localStorage.getItem('role');
+    if (saved === 'client' || saved === 'psychologist' || saved === 'admin' || saved === 'manager') {
+      setRoleState(saved);
+    } else {
+      setRoleState(null);
     }
+    setIsHydrated(true);
   }, []);
 
   const setRole = (newRole: Role) => {
     setRoleState(newRole);
-    if (newRole) {
-      localStorage.setItem('role', newRole);
-    } else {
-      localStorage.removeItem('role');
-    }
+    if (newRole) localStorage.setItem('role', newRole);
+    else localStorage.removeItem('role');
   };
 
   return (
-    <RoleContext.Provider value={{ role, setRole }}>
+    <RoleContext.Provider value={{ role, setRole, isHydrated }}>
       {children}
     </RoleContext.Provider>
   );
 };
 
 export const useRole = (): RoleContextType => {
-  const context = useContext(RoleContext);
-  if (!context) {
-    throw new Error('useRole must be used within a RoleProvider');
-  }
-  return context;
+  const ctx = useContext(RoleContext);
+  if (!ctx) throw new Error('useRole must be used within a RoleProvider');
+  return ctx;
 };

@@ -59,3 +59,7 @@
 .white-icon {
   filter: brightness(0) invert(1); 
 }
+
+.grey-icon {
+  filter: invert(59%) sepia(0%) saturate(0%) hue-rotate(165deg) brightness(91%) contrast(90%);
+}

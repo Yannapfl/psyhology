@@ -14,37 +14,36 @@ type LoginModalProps = {
   role: "client" | "psychologist";
 };
 
+
 export default function LoginModal({ role }: LoginModalProps) {
   const router = useRouter();
-  const { signIn, user } = useAuth();
+  const { signIn } = useAuth();
 
   const titleModal =
     role === "client"
       ? "Войдите, чтобы продолжить свои консультации"
       : "Войдите, чтобы начать работу с клиентами";
 
-  const [login, setLogin] = useState("");
+  const [login, setLogin] = useState(() => localStorage.getItem('remember_email') ?? "");
   const [password, setPassword] = useState("");
-  const [checkedAuthMemory, setCheckedAuthMemory] = useState(false);
+  const [checkedAuthMemory, setCheckedAuthMemory] = useState(!!localStorage.getItem('remember_email'));
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (!role) {
-      router.push(AppRoutes.start);
-    }
+    if (!role) router.push(AppRoutes.start);
   }, [role, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
-      await signIn({ email: login, password, role });
+      const { role: resolvedRole } = await signIn({
+        email: login,
+        password,
+        role,
+        remember: checkedAuthMemory,
+      });
 
-      if (!user?.role) {
-        throw new Error("Не удалось определить роль пользователя");
-      }
-
-      switch (user.role) {
+      switch (resolvedRole) {
         case "admin":
         case "manager":
           router.push(AppRoutes.clients);
@@ -55,15 +54,14 @@ export default function LoginModal({ role }: LoginModalProps) {
         case "client":
         default:
           router.push(AppRoutes.homeclient);
+          break;
       }
     } catch (err) {
       console.error("Ошибка при входе:", err);
     }
   };
 
-  if (!role) {
-    return null;
-  }
+  if (!role) return null;
 
   return (
     <div className={styles.modal}>
@@ -76,7 +74,7 @@ export default function LoginModal({ role }: LoginModalProps) {
         <div className="input-wrapper">
           <label className="label-input">Логин</label>
           <input
-            type="login"
+            type="text"                
             placeholder="Логин"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
@@ -96,12 +94,7 @@ export default function LoginModal({ role }: LoginModalProps) {
               className="toggle-password-button"
               onClick={() => setShowPassword(!showPassword)}
             >
-              <Image
-                src={showPassword ? closeEye : eye}
-                alt="Toggle password visibility"
-                width={24}
-                height={24}
-              />
+              <Image src={showPassword ? closeEye : eye} alt="Toggle password visibility" width={24} height={24}/>
             </button>
           </div>
         </div>
@@ -119,6 +112,7 @@ export default function LoginModal({ role }: LoginModalProps) {
         </div>
         <div className="button-group">
           <button
+            type="button"
             className="btn-light-green"
             onClick={() => router.push(AppRoutes.start)}
           >
@@ -130,3 +124,4 @@ export default function LoginModal({ role }: LoginModalProps) {
     </div>
   );
 }
+

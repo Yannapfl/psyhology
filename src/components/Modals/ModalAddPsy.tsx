@@ -78,13 +78,14 @@ export default function ModalAddPsy({ onClose, cohortId }: Props) {
         readiness_status: formData.readyStatus,
         remark: formData.comments,
         start_at: new Date(formData.startedAt).toISOString(),
-        distribution_status: 'left',
+        distribution_status: formData.distributionStatus,
       };
 
       const res = await api.post(`/v1/${cohortId}/psychologists`, payload);
       console.log("Психолог успешно создан", res.data);
       onClose();
     } catch (error) {
+      console.log(formData.startedAt)
       console.error("Ошибка при создании психолога:", error);
     }
   };
@@ -138,22 +139,22 @@ export default function ModalAddPsy({ onClose, cohortId }: Props) {
 
           <div className="two-flexbox">
             <Select name="tariff" value={formData.tariff} onChange={handleChange} options={["Базовый", "Premium"]} placeholderOption="Тариф" />
-            <Select name="distributionStatus" value={formData.distributionStatus} onChange={handleChange} options={distributionStatuses} placeholderOption="Статус распределения" />
+             <Input name="startedAt" placeholder="Дата старта" type="date" value={formData.startedAt} onChange={handleChange} style={{ padding: "16px" }} />
           </div>
 
           <div className="two-flexbox">
-            <Input name="startedAt" placeholder="Дата старта" type="date" value={formData.startedAt} onChange={handleChange} style={{ padding: "16px" }} />
-            <Select name="educationStatus" value={formData.educationStatus} onChange={handleChange} options={["Готов", "Не готов"]} placeholderOption="Статус обучения" />
-          </div>
-
-          <div className="two-flexbox">
+            <Select name="educationStatus" value={formData.educationStatus} onChange={handleChange} options={["В процессе", "Завершил"]} placeholderOption="Статус обучения" />
             <Input name="limitClients" placeholder="Нужно клиентов" value={formData.limitClients} onChange={handleChange} style={{ padding: "16px" }} />
-            <Input name="haveClients" placeholder="Распределено клиентов" type="number" value={formData.haveClients} onChange={handleChange} style={{ padding: "16px" }} />
           </div>
 
           <div className="two-flexbox">
-            <Select name="readyStatus" value={formData.readyStatus} onChange={handleChange} options={["Готов", "Не готов"]} placeholderOption="Готовность" />
+            <Input name="haveClients" placeholder="Распределено клиентов" type="number" value={formData.haveClients} onChange={handleChange} style={{ padding: "16px" }} />
+            <Select name="readyStatus" value={formData.readyStatus} onChange={handleChange} options={distributionStatuses} placeholderOption="Готовность" />
+          </div>
+
+          <div className="two-flexbox">
             <Input name="changesCount" placeholder="Количество замен" type="number" value={formData.changesCount} onChange={handleChange} style={{ padding: "16px" }} />
+            <div></div>
           </div>
 
           <textarea

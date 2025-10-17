@@ -1,33 +1,34 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import "./ClientsTable.css";
 import Image from "next/image";
 import profile from "../../../public/icons/profile.svg";
 import ModalEditClient from "../Modals/ModalEditClient";
 import api from "@/utils/api";
+import { statusColor } from "@/utils/statusColor";
 
 export type Client = {
-  ID: number;
-  FirstName: string;
-  LastName: string;
-  Phone2call: string;
-  Name4telegram: string;
-  DistributionStatus: "Распределён" | "В ожидании" | "Вышел из проекта";
-  Remark: string;
-};
-
-const statuses: Record<Client["DistributionStatus"], string> = {
-  Распределён: "status-green",
-  "В ожидании": "status-yellow",
-  "Вышел из проекта": "status-red",
+  id: number;
+  first_names: string;
+  last_name: string;
+  phone2call: string;
+  name4telegram: string;
+  distribution_status: string;
+  remark: string;
 };
 
 type Props = {
   id?: number | string;
+  search?: string; 
+  status?: string; 
 };
 
-export default function ClientsTable({ id }: Props) {
+const getStatusClass = (status: string) => {
+  return statusColor(status);
+};
+
+export default function ClientsTable({ id, search = "", status = "" }: Props) {
   const [data, setData] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openClient, setOpenClient] = useState(false);
@@ -35,11 +36,18 @@ export default function ClientsTable({ id }: Props) {
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
 
   const perPage = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, status, id]);
+
+  const pageData = useMemo(() => {
+    const start = (currentPage - 1) * perPage;
+    const end = currentPage * perPage;
+    return data.slice(start, end);
+  }, [data, currentPage]);
+
   const totalPages = Math.ceil(data.length / perPage) || 1;
-  const pageData = data.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
 
   useEffect(() => {
     const abort = new AbortController();
@@ -49,15 +57,25 @@ export default function ClientsTable({ id }: Props) {
         setIsLoading(true);
 
         const endpoint = id ? `/v1/${id}/clients` : `/v1/1/clients`;
+        const params: Record<string, string> = {};
 
-        const res = await api.get<Client[]>(endpoint, { signal: abort.signal });
-        setData(res.data);
-        setCurrentPage(1);
+        const fullname = search.trim();
+        const distribution_status = status.trim();
+
+        if (fullname.length > 0) params.fullname = fullname;
+        if (distribution_status.length > 0) params.distribution_status = distribution_status;
+
+        const res = await api.get<Client[]>(endpoint, {
+          signal: abort.signal,
+          params,
+        });
+console.log("RAW", res.data);
+console.log("norm", Array.isArray(res.data));
+        setData(Array.isArray(res.data) ? res.data : []);
+        
       } catch (err: unknown) {
         const name = (err as { name?: string })?.name;
-        if (name === "CanceledError" || name === "AbortError") {
-          return;
-        }
+        if (name === "CanceledError" || name === "AbortError") return;
         console.error("Ошибка загрузки клиентов:", err);
       } finally {
         setIsLoading(false);
@@ -66,7 +84,7 @@ export default function ClientsTable({ id }: Props) {
 
     fetchClients();
     return () => abort.abort();
-  }, [id]);
+  }, [id, search, status]);
 
   if (isLoading) {
     return <div className="table-wrapper">Загрузка...</div>;
@@ -86,22 +104,25 @@ export default function ClientsTable({ id }: Props) {
         </thead>
         <tbody>
           {pageData.map((row) => (
-            <tr key={row.ID} onClick={() => {
-                setSelectedClientId(row.ID);
+            <tr
+              key={row.id}
+              onClick={() => {
+                setSelectedClientId(row.id);
                 setOpenClient(true);
-              }}>
+              }}
+            >
               <td className="td-image">
                 <Image src={profile} alt="profile" width={28} />
-                {row.FirstName} {row.LastName}
+                {row.first_names} {row.last_name}
               </td>
-              <td>{row.Phone2call}</td>
-              <td>{row.Name4telegram}</td>
+              <td>{row.phone2call}</td>
+              <td>{row.name4telegram}</td>
               <td>
-                <span className={`status ${statuses[row.DistributionStatus]}`}>
-                  {row.DistributionStatus}
+                <span className={`status ${getStatusClass(row.distribution_status)}`}>
+                  {row.distribution_status}
                 </span>
               </td>
-              <td>{row.Remark}</td>
+              <td>{row.remark}</td>
             </tr>
           ))}
           {pageData.length === 0 && (

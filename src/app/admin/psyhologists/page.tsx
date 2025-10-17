@@ -2,7 +2,7 @@
 
 import LayoutAdmin from "@/components/Layout/LayoutAdmin/LayoutAdmin";
 import "../../../components/Layout/Layout.css";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ModalAddPsy from "@/components/Modals/ModalAddPsy";
 import Select from "@/components/Dropdown/Dropdown";
 import Input from "@/components/Input/Input";
@@ -10,15 +10,49 @@ import PsyTable from "@/components/PsyTable/PsyTable";
 
 export default function ClientsPage() {
   const [openAddModal, setOpenAddModal] = useState(false);
+
   const [search, setSearch] = useState("");
-  const [ status, setStatus] = useState('');
-  const [country, setCountry] = useState('');
-   const [internationalAcc, setInternationalAcc] = useState('');
-    const [tariff, setTariff] = useState('');
-     const [dateStart, setDateStart] = useState('');
-      const [readyStatus, setReadyStatus] = useState('');
+  const [status, setStatus] = useState("");
+  const [country, setCountry] = useState("");
+  const [internationalAcc, setInternationalAcc] = useState("");
+  const [tariff, setTariff] = useState("");
+  const [dateStart, setDateStart] = useState("");
+  const [readyStatus, setReadyStatus] = useState("");
+  
+  const hasFilters = useMemo(
+    () =>
+      !!(
+        search.trim() ||
+        status ||
+        country ||
+        internationalAcc ||
+        tariff ||
+        dateStart ||
+        readyStatus
+      ),
+    [search, status, country, internationalAcc, tariff, dateStart, readyStatus]
+  );
 
+  const baseControlStyle: React.CSSProperties = {
+    padding: "10px 12px",
+    marginBottom: 0,
+    fontSize: "14px",
+  };
 
+  const controlStyle = (hasValue: boolean): React.CSSProperties => ({
+    ...baseControlStyle,
+    color: hasValue ? "#000000" : "#A3B3ADB2",
+  });
+
+  const clearFilters = () => {
+    setSearch("");
+    setStatus("");
+    setCountry("");
+    setInternationalAcc("");
+    setTariff("");
+    setDateStart("");
+    setReadyStatus("");
+  };
 
   return (
     <LayoutAdmin>
@@ -39,16 +73,12 @@ export default function ClientsPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="input-search"
           placeholder="Поиск"
+          style={controlStyle(!!search.trim())}
         />
 
-        <div className="filters-group" style={{ width: '95%'}}>
+        <div className="filters-group" style={{ width: "95%" }}>
           <Select
-            style={{
-              padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",
-            }}
+            style={controlStyle(!!country)}
             name=""
             value={country}
             onChange={(e) => setCountry(e.target.value)}
@@ -57,12 +87,7 @@ export default function ClientsPage() {
           />
 
           <Select
-            style={{
-              padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",
-            }}
+            style={controlStyle(!!internationalAcc)}
             name=""
             value={internationalAcc}
             onChange={(e) => setInternationalAcc(e.target.value)}
@@ -71,37 +96,25 @@ export default function ClientsPage() {
           />
 
           <Select
-            style={{
-              padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",
-            }}
+            style={controlStyle(!!tariff)}
             name=""
             value={tariff}
             onChange={(e) => setTariff(e.target.value)}
-            options={["Premim", "Базовый"]}
+            options={["Premium", "Базовый"]}
             placeholderOption="Тариф"
           />
 
-          <Input placeholder="Дата старта"
+          <Input
+            placeholder="Дата старта"
             name="date"
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            style={{padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",}}
-            />
+            style={controlStyle(!!dateStart)}
+          />
 
-            <Select
-            style={{
-              padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",
-            }}
+          <Select
+            style={controlStyle(!!status)}
             name="status"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -109,13 +122,8 @@ export default function ClientsPage() {
             placeholderOption="Статус обучения"
           />
 
-            <Select
-            style={{
-              padding: "10px 12px",
-              marginBottom: 0,
-              fontSize: "14px",
-              color: "#A3B3ADB2",
-            }}
+          <Select
+            style={controlStyle(!!readyStatus)}
             name=""
             value={readyStatus}
             onChange={(e) => setReadyStatus(e.target.value)}
@@ -123,13 +131,35 @@ export default function ClientsPage() {
             placeholderOption="Статус готовности"
           />
 
-          
-          <button className="filter-button">Очистить фильтр</button>
+          <button
+            className="filter-button"
+            onClick={clearFilters}
+            disabled={!hasFilters}
+            style={{
+              backgroundColor: hasFilters ? "#10603C" : "#e6e6e6",
+              color: hasFilters ? "#ffffff" : "#9e9e9e",
+              cursor: hasFilters ? "pointer" : "not-allowed",
+              transition: "background-color 0.2s ease, color 0.2s ease",
+            }}
+            title={hasFilters ? "Сбросить выбранные фильтры" : "Нет активных фильтров"}
+          >
+            Очистить фильтр
+          </button>
         </div>
 
-        <PsyTable />
+        <PsyTable
+          search={search}
+          country={country}
+          internationalAcc={internationalAcc}
+          tariff={tariff}
+          dateStart={dateStart}
+          status={status}
+          readyStatus={readyStatus}
+        />
 
-        {openAddModal && <ModalAddPsy onClose={() => setOpenAddModal(false)} cohortId={1} />}
+        {openAddModal && (
+          <ModalAddPsy onClose={() => setOpenAddModal(false)} cohortId={1} />
+        )}
       </div>
     </LayoutAdmin>
   );

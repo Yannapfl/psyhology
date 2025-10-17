@@ -130,7 +130,7 @@ export default function ModalAddClient({ onClose }: { onClose: () => void }) {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              options={["Распределен", "В ожидании", "Вышел из проекта"]}
+              options={["Распределён", "В ожидании", "Вышел из проекта", "Возврат"]}
               placeholderOption="Статус распределения"
             />
             <Select

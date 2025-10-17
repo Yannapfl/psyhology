@@ -56,8 +56,11 @@
   width: 100%;
 }
 
+.clients-list-block h5,
+.clients-list-block tr,
 .clients-list-block td,
-.clients-list-block th {
+.expanded-row td,
+.clients-list-block {
   border: none;
 }
 
@@ -65,7 +68,7 @@
   border-bottom: none; 
 }
 
-.clients-list-block tr {
+.clients-list-block {
   border-bottom: 1px solid #1e1e1e1a; 
 }
 

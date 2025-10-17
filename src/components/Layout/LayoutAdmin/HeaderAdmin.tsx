@@ -4,13 +4,16 @@ import "../Header/Header";
 import Image from "next/image";
 import logo from "../../../../public/icons/Logo.svg";
 import bell from "../../../../public/icons/bell.svg";
-import profile from "../../../../public/icons/profile.svg";
+import exit from "../../../../public/icons/exit.svg";
 import { usePathname, useRouter } from "next/navigation";
 import { AppRoutes } from "@/constants/AppRoutes";
+import ModalExit from "@/components/Modals/ModalExit";
+import { useState } from "react";
 
 export default function HeaderAdmin() {
   const router = useRouter();
   const pathname = usePathname();
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   const isActive = (path: string) => (pathname === path ? "active-link" : "");
 
@@ -58,8 +61,12 @@ export default function HeaderAdmin() {
       </div>
       <div className="navigation-header-right">
         <Image src={bell} alt="bell" />
-        <Image src={profile} alt="profile" style={{ cursor: "pointer" }} />
+        <Image src={exit} alt="exit" className='grey-icon' style={{ cursor: "pointer" }} onClick={() => setOpenAddModal(true)} />
       </div>
+
+      {openAddModal && (
+                            <ModalExit onClose={() => setOpenAddModal(false)} />
+                          )}
     </header>
   );
 }
