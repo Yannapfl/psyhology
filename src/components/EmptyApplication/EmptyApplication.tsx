@@ -1,14 +1,13 @@
 import { AppRoutes } from "@/constants/AppRoutes";
 import UserIcon from "../../../public/icons/iconsComponent/UserIcon"
 import { useRouter } from "next/navigation";
+import './EmptyApplication.css'
 
 export default function EmptyApplication() {
     const router = useRouter();
 
-
-
     return (
-        <div className="psy-empty" style={{ margin: '7em 12em', width: '65%'}}>
+        <div className="psy-empty">
             <UserIcon width={64} style={{ color: '#949494'}} />
 
             <h2>У вас еще нет психолога</h2>

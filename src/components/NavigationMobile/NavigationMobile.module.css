@@ -1,0 +1,42 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid #E5E8E0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+}
+
+.item {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E1E1E;
+  text-transform: none;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item:active {
+  background-color: #F2F3ED;
+}
+
+.active {
+  color: #10603C;
+}
+
+@media (min-width: 768px) {
+  .bar {
+    display: none;
+  }
+}

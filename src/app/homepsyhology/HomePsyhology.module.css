@@ -1,0 +1,17 @@
+
+.contentWrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 2em 7em;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .contentWrap {
+    margin: 16px;
+    gap: 0;
+    flex-direction: column;
+  }
+}

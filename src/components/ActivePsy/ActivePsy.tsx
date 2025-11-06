@@ -31,7 +31,7 @@ export default function ActivePsy() {
   return (
     <div className="psy-card">
       <div className="psy-profile">
-        <Image src={profile} alt="clients" width={140} />
+        <Image src={profile} alt="clients" width={100} />
         <h2>
           {psyInfo?.first_name} {psyInfo?.last_name}
         </h2>

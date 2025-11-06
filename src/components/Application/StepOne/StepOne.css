@@ -65,3 +65,19 @@
 .description-application input {
   height: 130px;
 }
+
+.btn-save {
+  width: 30%;
+}
+
+@media screen {
+  .form-select {
+    width: 90%;
+    margin-top: -8px;
+  }
+
+  .step-one .btn-save {
+    margin-top: -18px;
+    width: 100%;
+  }
+}

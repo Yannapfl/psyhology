@@ -98,8 +98,36 @@
   width: 100%;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 780px) {
   .page {
-    padding: 32px;
+    display: flex;
+    width: 90%;
+    margin: 12px;
+  }
+  .modal {
+    padding: 16px;
+    border-radius: 12px;
+    width: 95%;
+    margin-bottom: 14px;
+  }
+
+  .line {
+   width: 100% + 8px;
+    margin: 0 -12px;
+  }
+
+  .flexboxtwo {
+    flex-direction: column;  
+    gap: 12px;
+  }
+
+  .selectmodule {
+    width: 90%;              
+    min-height: 140px;
+    padding: 16px;
+  }
+
+  .imageSelect {
+    align-items: center;
   }
 }

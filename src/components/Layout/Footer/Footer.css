@@ -62,3 +62,14 @@
     align-items: center;
     gap: 0.2em;
 }
+
+@media screen {
+    footer {
+        font-size: 8px;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+    }
+
+}

@@ -19,7 +19,7 @@ export default function DetailsBlock({
 }: DetailsBlockProps) {
   return (
     <div className="client-block-wrapper">
-      <div className="client-row">
+      <div className="client-row-form">
         <div className="client-item">
           <div className="label">Страна проживания</div>
           <div className="value">{country}</div>
@@ -30,7 +30,7 @@ export default function DetailsBlock({
         </div>
       </div>
 
-      <div className="client-row">
+      <div className="client-row-form">
         <div className="client-item">
           <div className="label">Специфические запросы</div>
           <div className="value">{specialRequest}</div>

@@ -103,7 +103,7 @@ export default function StepOne<T extends { country: string; timezone: string; d
         <div className="button-group">
           <button
             className="btn-save"
-            style={{ width: "30%" }}
+            
             onClick={handleSubmit}
             disabled={
               !formData.country ||

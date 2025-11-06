@@ -1,13 +1,13 @@
 export type FormClient = {
-  firstName: string;
-  lastName: string;
+  first_names: string;
+  last_name: string;
   birthDate: string;
   phoneCall: string;
   phoneWhatsApp: string;
   phoneTelegram: string;
   email: string;
   psyhology: string;
-  status: string;
+  distribution_status: string;
   comments: string;
   country: string;
   timezone: string;

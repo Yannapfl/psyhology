@@ -6,7 +6,7 @@
   background-color: #f4f5ef; 
 }
 
-.client-row {
+.client-row-form {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;

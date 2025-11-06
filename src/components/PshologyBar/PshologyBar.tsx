@@ -40,10 +40,11 @@ export default function PsyhologyBar() {
       <div className="active-block">
         {isFilled === null ? null : isFilled ? (
           active === 0 ? (
-            <>
-              <ActivePsy />
+            <div className="info-active-about-psy">
               <InfoChange />
-            </>
+              <ActivePsy />
+              
+            </div>
           ) : (
             <>
               <ChangePsy />

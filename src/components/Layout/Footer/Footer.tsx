@@ -12,8 +12,7 @@ export default function Footer() {
         <footer>
             <div className="footer-links">
                 <div className="footer-meta">
-                    <a href='###'>Вопросы-ответы</a>
-                    <a href='###'>Правила участия</a>
+    
                 </div>
                 <div className="footer-social-media">
                     <div className="social-media-block">

@@ -1,12 +1,13 @@
-"use client";
-import { useEffect, useMemo, useState } from "react";
-import Pagination from "../Pagination/Pagination";
-import "./ClientsTable.css";
-import Image from "next/image";
-import profile from "../../../public/icons/profile.svg";
-import ModalEditClient from "../Modals/ModalEditClient";
-import api from "@/utils/api";
-import { statusColor } from "@/utils/statusColor";
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Pagination from '../Pagination/Pagination';
+import './ClientsTable.css';
+import Image from 'next/image';
+import profile from '../../../public/icons/profile.svg';
+import ModalEditClient from '../Modals/ModalEditClient';
+import api from '@/utils/api';
+import { statusColor } from '@/utils/statusColor';
 
 export type Client = {
   id: number;
@@ -20,20 +21,29 @@ export type Client = {
 
 type Props = {
   id?: number | string;
-  search?: string; 
-  status?: string; 
+  search?: string;
+  status?: string;
 };
 
-const getStatusClass = (status: string) => {
-  return statusColor(status);
-};
+const getStatusClass = (status: string) => statusColor(status);
 
-export default function ClientsTable({ id, search = "", status = "" }: Props) {
+type ClientCreatedEvent = CustomEvent<void>;
+type ClientUpdatedEvent = CustomEvent<void>;
+declare global {
+  interface WindowEventMap {
+    'client:created': ClientCreatedEvent;
+    'client:updated': ClientUpdatedEvent;
+  }
+}
+
+export default function ClientsTable({ id, search = '', status = '' }: Props) {
   const [data, setData] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openClient, setOpenClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
+
+  const [refreshTick, setRefreshTick] = useState(0);
 
   const perPage = 10;
 
@@ -69,14 +79,12 @@ export default function ClientsTable({ id, search = "", status = "" }: Props) {
           signal: abort.signal,
           params,
         });
-console.log("RAW", res.data);
-console.log("norm", Array.isArray(res.data));
+
         setData(Array.isArray(res.data) ? res.data : []);
-        
       } catch (err: unknown) {
         const name = (err as { name?: string })?.name;
-        if (name === "CanceledError" || name === "AbortError") return;
-        console.error("Ошибка загрузки клиентов:", err);
+        if (name === 'CanceledError' || name === 'AbortError') return;
+        console.error('Ошибка загрузки клиентов:', err);
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +92,20 @@ console.log("norm", Array.isArray(res.data));
 
     fetchClients();
     return () => abort.abort();
-  }, [id, search, status]);
+  }, [id, search, status, refreshTick]);
+
+  useEffect(() => {
+    const onCreated = () => setRefreshTick((x) => x + 1);
+    const onUpdated = () => setRefreshTick((x) => x + 1);
+
+    window.addEventListener('client:created', onCreated);
+    window.addEventListener('client:updated', onUpdated);
+
+    return () => {
+      window.removeEventListener('client:created', onCreated);
+      window.removeEventListener('client:updated', onUpdated);
+    };
+  }, []);
 
   if (isLoading) {
     return <div className="table-wrapper">Загрузка...</div>;
@@ -127,7 +148,7 @@ console.log("norm", Array.isArray(res.data));
           ))}
           {pageData.length === 0 && (
             <tr>
-              <td colSpan={5} style={{ textAlign: "center", padding: 16 }}>
+              <td colSpan={5} style={{ textAlign: 'center', padding: 16 }}>
                 Данных нет
               </td>
             </tr>
@@ -143,11 +164,11 @@ console.log("norm", Array.isArray(res.data));
 
       {openClient && selectedClientId !== null && (
         <ModalEditClient
+          clientId={selectedClientId}
           onClose={() => {
             setOpenClient(false);
             setSelectedClientId(null);
           }}
-          clientId={selectedClientId}
         />
       )}
     </div>

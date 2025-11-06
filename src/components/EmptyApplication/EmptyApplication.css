@@ -1,0 +1,12 @@
+.psy-empty {
+    margin: 7em 12em;
+    width: 65%;
+}
+
+
+@media (max-width: 760px) {
+    .psy-empty {
+        margin: 12px;
+        width: 90%;
+    }
+}

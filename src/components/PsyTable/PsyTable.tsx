@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useMemo, useState, Fragment, useCallback } from "react";
 import Pagination from "../Pagination/Pagination";
 import Image from "next/image";
 import profile from "../../../public/icons/profile.svg";
@@ -10,10 +10,10 @@ import "./PsyTable.css";
 import { statusColor } from "@/utils/statusColor";
 import api from "@/utils/api";
 import formatDate from "@/utils/formatDate";
+import ModalEditPsy from "../Modals/ModalEditPsy";
 
 type Props = {
   id?: number | string;
-
 
   search?: string;           // fullname
   country?: string;          // country
@@ -24,7 +24,6 @@ type Props = {
   readyStatus?: string;      // readiness_status
 };
 
-
 interface ClientDTO {
   id: number;
   first_name: string;
@@ -34,7 +33,6 @@ interface ClientDTO {
   distribution_status: string;
   comment: string;
 }
-
 
 interface PsychologistDTO {
   id: number;
@@ -69,15 +67,26 @@ export default function PsyTable({
   status = "",
   readyStatus = "",
 }: Props) {
+  const cohortId = id ?? 1;
+
   const [data, setData] = useState<PsychologistListDTO>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
   const totalPages = Math.ceil(data.length / perPage);
-  const pageData = data.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const pageData = useMemo(
+    () => data.slice((currentPage - 1) * perPage, currentPage * perPage),
+    [data, currentPage, perPage]
+  );
+
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const toggleExpand = (rowId: number) => {
+  // modal state
+  const [editId, setEditId] = useState<number | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const toggleExpand = (rowId: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setExpandedId(expandedId === rowId ? null : rowId);
   };
 
@@ -89,45 +98,59 @@ export default function PsyTable({
     return val;
   };
 
+  const fetchPsys = useCallback(async (signal?: AbortSignal): Promise<void> => {
+    try {
+      setIsLoading(true);
+
+      const endpoint = `/v1/${cohortId}/psychologists`;
+
+      const params: Record<string, string> = {};
+      if (search.trim()) params.fullname = search.trim();
+      if (country) params.country = country;
+      if (internationalAcc) params.international_account = normalizeInternationalAcc(internationalAcc);
+      if (tariff) params.plan = tariff;
+      if (dateStart) params.start_date = dateStart;
+      if (status) params.education_status = status;
+      if (readyStatus) params.readiness_status = readyStatus;
+
+      const res = await api.get<PsychologistListDTO>(endpoint, {
+        signal,
+        params,
+      });
+
+      setData(res.data);
+      setCurrentPage(1);
+    } catch (err) {
+      if (err && typeof err === "object" && "name" in err) {
+        const name = String((err as { name?: string }).name);
+        if (name === "CanceledError" || name === "AbortError") return;
+      }
+      console.error("Ошибка загрузки психологов:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cohortId, country, dateStart, internationalAcc, readyStatus, search, status, tariff]);
+
   useEffect(() => {
     const abort = new AbortController();
-
-    const fetchPsys = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-
-        const endpoint = id ? `/v1/${id}/psychologists` : `/v1/1/psychologists`;
-
-        const params: Record<string, string> = {};
-        if (search.trim()) params.fullname = search.trim();
-        if (country) params.country = country;
-        if (internationalAcc) params.international_account = normalizeInternationalAcc(internationalAcc);
-        if (tariff) params.plan = tariff;
-        if (dateStart) params.start_date = dateStart;
-        if (status) params.education_status = status;
-        if (readyStatus) params.readiness_status = readyStatus;
-
-        const res = await api.get<PsychologistListDTO>(endpoint, {
-          signal: abort.signal,
-          params,
-        });
-
-        setData(res.data);
-        setCurrentPage(1);
-      } catch (err) {
-        if (err && typeof err === "object" && "name" in err) {
-          const name = String((err as { name?: string }).name);
-          if (name === "CanceledError" || name === "AbortError") return;
-        }
-        console.error("Ошибка загрузки психологов:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPsys();
+    fetchPsys(abort.signal);
     return () => abort.abort();
-  }, [id, search, country, internationalAcc, tariff, dateStart, status, readyStatus]);
+  }, [fetchPsys]);
+
+  const openEdit = (psyId: number) => {
+    setEditId(psyId);
+    setIsEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    setIsEditOpen(false);
+    setEditId(null);
+  };
+
+  const handleSaved = async () => {
+    await fetchPsys();
+    closeEdit();
+  };
 
   if (isLoading) {
     return <div className="table-wrapper">Загрузка...</div>;
@@ -159,12 +182,16 @@ export default function PsyTable({
         <tbody>
           {pageData.map((psy) => (
             <Fragment key={psy.id}>
-              <tr className="psy-row">
+              <tr
+                className="psy-row"
+                onClick={() => openEdit(psy.id)}
+                style={{ cursor: "pointer" }}
+              >
                 <td>
                   <div className="td-with-button">
                     <button
                       className="expand-btn btn-text"
-                      onClick={() => toggleExpand(psy.id)}
+                      onClick={(e) => toggleExpand(psy.id, e)}
                     >
                       <Image
                         src={expandedId === psy.id ? arrowUp : arrowDown}
@@ -179,9 +206,9 @@ export default function PsyTable({
                   </div>
                 </td>
 
-                <td style={{ textWrap: "nowrap"  }}>{psy.phone2call}</td>
-                <td style={{ textWrap: "nowrap"}}>{psy.name4telegram}</td>
-                <td style={{ textWrap: "nowrap"  }}>{psy.email}</td>
+                <td style={{ textWrap: "nowrap" }}>{psy.phone2call}</td>
+                <td style={{ textWrap: "nowrap" }}>{psy.name4telegram}</td>
+                <td style={{ textWrap: "nowrap" }}>{psy.email}</td>
                 <td>{psy.education}</td>
                 <td>{psy.country}</td>
                 <td>{psy.international_account ? "Есть" : "Нет"}</td>
@@ -208,7 +235,7 @@ export default function PsyTable({
               </tr>
 
               {expandedId === psy.id && (
-                <tr className="expanded-row">
+                <tr className="expanded-row" onClick={(e) => e.stopPropagation()}>
                   <td colSpan={25}>
                     <div className="clients-list-block">
                       <h5
@@ -252,6 +279,16 @@ export default function PsyTable({
         totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
       />
+
+      {isEditOpen && editId !== null && (
+        <ModalEditPsy
+          onClose={closeEdit}
+          onSaved={handleSaved}
+          cohortId={Number(cohortId)}
+          psychologistId={editId}
+          mode="edit"
+        />
+      )}
     </>
   );
 }

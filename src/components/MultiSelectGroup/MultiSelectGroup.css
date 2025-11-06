@@ -49,3 +49,19 @@
   border-color: #065f46;
   color: white;
 }
+
+
+@media screen {
+  .multi-select-group {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .multi-select-group h4 {
+    font-size: 14px;
+  }
+
+}

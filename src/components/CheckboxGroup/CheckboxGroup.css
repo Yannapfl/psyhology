@@ -63,3 +63,15 @@
 .arrow-up {
     transform: rotate(180deg)
 }
+
+@media screen {
+  .checkbox-group {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .checkbox-item {
+    font-size: 11px
+  }
+}

@@ -1,0 +1,15 @@
+.contentWrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 2em 7em;
+}
+
+@media (max-width: 767px) {
+  .contentWrap {
+    margin: 16px;       
+    padding-bottom: 72px; 
+    gap: 0;
+  }
+}

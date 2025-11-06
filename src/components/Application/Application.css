@@ -21,3 +21,9 @@
 .application .button-group {
     margin: 1em auto;
 }
+
+@media (max-width: 767px) {
+  .application {
+    width: 90%;
+  }
+}

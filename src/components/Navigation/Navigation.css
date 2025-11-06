@@ -63,3 +63,7 @@
 .grey-icon {
   filter: invert(59%) sepia(0%) saturate(0%) hue-rotate(165deg) brightness(91%) contrast(90%);
 }
+
+@media (max-width: 767px) {
+  .navigation-bar { display: none; } 
+}
