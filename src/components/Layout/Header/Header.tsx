@@ -63,7 +63,6 @@ export default function Header() {
           style={{ cursor: 'pointer' }}
         />
         <div className="navigation-header">
-          <a onClick={() => router.push(AppRoutes.application_psy)}>Вопросы-ответы</a>
           <a href="###">Правила участия</a>
         </div>
       </div>
